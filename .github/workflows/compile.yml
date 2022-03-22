@@ -90,7 +90,7 @@ jobs:
       run: |
         git clone --depth 1 -b main https://github.com/281677160/common $GITHUB_WORKSPACE/build/common
         mv $GITHUB_WORKSPACE/build/common/*.sh $GITHUB_WORKSPACE/build/${Modelfile}
-        chmod -R +x $GITHUB_WORKSPACE/build/common
+        chmod -R +x $GITHUB_WORKSPACE/build
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
     
@@ -99,7 +99,7 @@ jobs:
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
-        echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+        echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build/${Modelfile}" >> $GITHUB_ENV
         echo "BASE_PATH=$GITHUB_WORKSPACE/openwrt/package/base-files/files" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         if [[ "${REPO_BRANCH}" == "master" ]]; then
@@ -123,16 +123,9 @@ jobs:
           echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
           exit 1
         fi
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
  
     - name: 加载源,补丁和自定义设置
       run: |
-        mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
         cd openwrt
         source $BUILD_PATH/ceshi777.sh && Diy_settings
         source $BUILD_PATH/ceshi777.sh && Diy_laku
