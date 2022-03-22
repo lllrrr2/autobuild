@@ -138,6 +138,12 @@ jobs:
         echo "DELETE=$Home/package/base-files/files/etc/deletefile" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
  
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@master
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+ 
     - name: 加载源,补丁和自定义设置
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
