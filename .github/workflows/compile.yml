@@ -128,7 +128,20 @@ jobs:
       run: |
         cd openwrt
         mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
-        source $BUILD_PATH/ceshi777.sh && menu
+        source $BUILD_PATH/ceshi777.sh && Diy_laku
+        source $BUILD_PATH/ceshi777.sh && Diy_lede
+        source $BUILD_PATH/ceshi777.sh && Diy_default
+        source $BUILD_PATH/ceshi777.sh && Diy_INDEX
+        source $BUILD_PATH/ceshi777.sh && Diy_all
+        
+        /bin/bash $BUILD_PATH/$DIY_PART_SH
+        if [[ "${REGULAR_UPDATE}" == "true" ]]; then
+          source $BUILD_PATH/upgrade.sh && Diy_Part1
+        fi
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a > /dev/null 2>&1
+        ./scripts/feeds install -a -f
+        [[ -f $BUILD_PATH/$CONFIG_FILE ]] && mv $BUILD_PATH/$CONFIG_FILE .config
         
     - name: SSH远程连接（制作.config配置文件）
       uses: danshui-git/debugger-action@master
