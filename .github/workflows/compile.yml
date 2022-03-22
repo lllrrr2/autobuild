@@ -66,15 +66,38 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
         echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
-        
+    - name: 部署编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc
+        sudo -E apt-get -qq update -y
+        sudo -E apt-get -qq full-upgrade -y
+        sudo -E apt-get -qq install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl rename libpcap0.8-dev swig rsync
+        sudo -E apt-get -qq autoremove -y --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+            docker rmi $(docker images -q)
+            sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
+            sudo rm -rf /etc/mysql /etc/php /swapfile
+        fi
+    
+    - name: 下载"${{matrix.target}}"源码
+      working-directory: /workdir
+      run: |
+        git clone --depth 1 -b main https://github.com/281677160/common ${GITHUB_WORKSPACE}/build/common
+        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
+        git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
     - name: 公 告
       run: |
-        git clone --depth 1 -b main https://github.com/281677160/common $GITHUB_WORKSPACE/build/common
-        mv -f $GITHUB_WORKSPACE/build/common/*.sh $GITHUB_WORKSPACE/build/${{matrix.target}}
-        chmod -R +x $GITHUB_WORKSPACE/build/${{matrix.target}}
-        echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
-        echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
-        echo "BASE_PATH=$GITHUB_WORKSPACE/openwrt/package/base-files/files" >> $GITHUB_ENV
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
+        echo "HOME_PATH=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
+        echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+        echo "BASE_PATH=${GITHUB_WORKSPACE}/openwrt/package/base-files/files" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         if [[ "${REPO_BRANCH}" == "master" ]]; then
           echo "ZZZ_PATH=$Home/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
@@ -97,48 +120,18 @@ jobs:
           echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
           exit 1
         fi
-
-    - name: 部署编译环境
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc
-        sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq full-upgrade -y
-        sudo -E apt-get -qq install -y subversion build-essential libncurses5-dev openssl libssl-dev zlib1g-dev gawk git ccache gettext libssl-dev xsltproc zip git-core wget curl grep
-        sudo -E apt-get -qq autoremove -y --purge
-        sudo -E apt-get -qq clean
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
-        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
-            docker rmi $(docker images -q)
-            sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
-            sudo rm -rf /etc/mysql /etc/php /swapfile
-        fi
-    
-    - name: 下载"${{matrix.target}}"源码
-      working-directory: /workdir
-      run: |
-        git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }} 
  
     - name: 加载源,补丁和自定义设置
       run: |
-        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        cd openwrt
+        mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
         source $BUILD_PATH/ceshi777.sh && Diy_settings
+        cd openwrt
         source $BUILD_PATH/ceshi777.sh && Diy_laku
         source $BUILD_PATH/ceshi777.sh && Diy_lede
         source $BUILD_PATH/ceshi777.sh && Diy_default
         source $BUILD_PATH/ceshi777.sh && Diy_INDEX
         source $BUILD_PATH/ceshi777.sh && Diy_all
+        
         /bin/bash $BUILD_PATH/$DIY_PART_SH
         if [[ "${REGULAR_UPDATE}" == "true" ]]; then
           source $BUILD_PATH/upgrade.sh && Diy_Part1
@@ -147,13 +140,6 @@ jobs:
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a -f
         [[ -f $BUILD_PATH/$CONFIG_FILE ]] && mv $BUILD_PATH/$CONFIG_FILE .config
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        
     
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
       if: env.USE_CACHEWRTBUILD == 'true'
@@ -165,7 +151,7 @@ jobs:
     - name: 生成配置文件
       run: |
         cd openwrt
-        source "${PATH1}/common.sh" && Diy_chajian > /dev/null 2>&1
+        source "$BUILD_PATH/ceshi777.sh" && Diy_chajian > /dev/null 2>&1
         make defconfig > /dev/null 2>&1
         echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> $GITHUB_ENV
         echo "TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)" >> $GITHUB_ENV
@@ -185,10 +171,10 @@ jobs:
       continue-on-error: true
       run: |
         cd openwrt
-        source "${PATH1}/common.sh" && Diy_chuli > /dev/null 2>&1
+        source "$BUILD_PATH/ceshi777.sh" && Diy_chuli > /dev/null 2>&1
         if [ "${BY_INFORMATION}" == "true" ]; then
-          source "${PATH1}/upgrade.sh" && GET_TARGET_INFO
-          source "${PATH1}/common.sh" && Diy_xinxi
+          source "$BUILD_PATH/upgrade.sh" && GET_TARGET_INFO
+          source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
         fi
         
     - name: 启用在线更新
@@ -197,7 +183,6 @@ jobs:
       run: |
         cd openwrt
         source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
-
     - name: 下载软件包
       id: package
       run: |
@@ -206,7 +191,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
     - name: 开始编译固件
       id: compile
       run: |
@@ -216,7 +200,6 @@ jobs:
         echo "::set-output name=status::success"
         echo "date=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "date1=$(date +'%m-%d')" >> $GITHUB_ENV
-
     - name: 上传bin文件夹(固件+ipk)在 github actions
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       uses: actions/upload-artifact@v2
