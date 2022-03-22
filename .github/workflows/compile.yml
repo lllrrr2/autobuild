@@ -67,15 +67,6 @@ jobs:
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
         echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
 
-    - name: 电报机器人或pushplus信息通知
-      if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TELE'
-      run: |
-        if [[ "${SERVERCHAN_SCKEY}" == "TELE" ]]; then
-          curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.CangKu}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
-        elif [[ "${SERVERCHAN_SCKEY}" == "PUSH" ]]; then
-          curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="开始编译【${{matrix.target}}】" --data "content=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.CangKu}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋💐" "http://www.pushplus.plus/send"
-        fi
-
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -98,62 +89,60 @@ jobs:
     - name: 下载"${{matrix.target}}"源码
       working-directory: /workdir
       run: |
-        git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt > /dev/null 2>&1
+        git clone --depth 1 -b main https://github.com/281677160/common ${GITHUB_WORKSPACE}/build/common
+        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
+        git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        cd $GITHUB_WORKSPACE/openwrt
-        ./scripts/feeds update -a
-        echo "Home=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
-        echo "PATH1=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+
 
     - name: 公 告
       run: |
-        echo
-        git clone --depth 1 -b main https://github.com/281677160/common ${GITHUB_WORKSPACE}/build/common > /dev/null 2>&1
-        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
-        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
-          echo "ZZZ=$Home/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=amlogic" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "master" ]]; then
-          echo "ZZZ=$Home/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Lede" >> $GITHUB_ENV
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
+        echo "HOME_PATH=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
+        echo "BUILD_PATH=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+        echo "BASE_PATH=${GITHUB_WORKSPACE}/openwrt/package/base-files/files" >> $GITHUB_ENV
+        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+        if [[ "${REPO_BRANCH}" == "master" ]]; then
+          echo "ZZZ_PATH=$Home/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Lede" >> $GITHUB_ENV
+          echo "YYYDDD=LEDE" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "main" ]]; then
-          echo "ZZZ=$Home/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Lienol" >> $GITHUB_ENV
+          echo "ZZZ_PATH=$Home/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Lienol" >> $GITHUB_ENV
           echo "OpenWrt_name=20.06" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-          echo "ZZZ=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
-          echo "CODE=Tianling" >> $GITHUB_ENV
+          echo "ZZZ_PATH=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Tianling" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06_tl" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-          echo "ZZZ=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
-          echo "CODE=Mortal" >> $GITHUB_ENV
+          echo "ZZZ_PATH=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Mortal" >> $GITHUB_ENV
           echo "OpenWrt_name=21.02" >> $GITHUB_ENV
         else
           echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
           exit 1
         fi
-        echo "NETIP=$Home/package/base-files/files/etc/networkip" >> $GITHUB_ENV
-        echo "DELETE=$Home/package/base-files/files/etc/deletefile" >> $GITHUB_ENV
-        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
  
     - name: 加载源,补丁和自定义设置
       run: |
-        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        mv -f "${Home}"/build/common/*.sh "${PATH1}"
-        source "${PATH1}/ceshi777.sh" && Diy_settings
+        mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
+        source $BUILD_PATH/ceshi777.sh && Diy_settings
         cd openwrt
-        source "${PATH1}/ceshi777.sh" && Diy_lede
-        source "${PATH1}/ceshi777.sh" && Diy_all
-        /bin/bash "${PATH1}/$DIY_PART_SH"
-        ./scripts/feeds update -a > /dev/null 2>&1
+        source $BUILD_PATH/ceshi777.sh && Diy_laku
+        source $BUILD_PATH/ceshi777.sh && Diy_lede
+        source $BUILD_PATH/ceshi777.sh && Diy_default
+        source $BUILD_PATH/ceshi777.sh && Diy_INDEX
+        source $BUILD_PATH/ceshi777.sh && Diy_all
+        
+        /bin/bash $BUILD_PATH/$DIY_PART_SH
+        if [[ "${REGULAR_UPDATE}" == "true" ]]; then
+          source $BUILD_PATH/upgrade.sh && Diy_Part1
+        fi
+        ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a -f
-        [[ -e "$PATH1/$CONFIG_FILE" ]] && mv "$PATH1/$CONFIG_FILE" .config
-        if [[ "${REGULAR_UPDATE}" == "true" ]]; then
-          source "${PATH1}/upgrade.sh" && Diy_Part1
-        fi
+        [[ -f $BUILD_PATH/$CONFIG_FILE ]] && mv $BUILD_PATH/$CONFIG_FILE .config
     
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
       if: env.USE_CACHEWRTBUILD == 'true'
