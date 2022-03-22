@@ -89,7 +89,7 @@ jobs:
       working-directory: /workdir
       run: |
         git clone --depth 1 -b main https://github.com/281677160/common $GITHUB_WORKSPACE/build/common
-        mv -f $GITHUB_WORKSPACE/build/common/*.sh $BUILD_PATH $GITHUB_WORKSPACE/build/${{matrix.target}}
+        mv -f $GITHUB_WORKSPACE/build/common/*.sh $GITHUB_WORKSPACE/build/${{matrix.target}}
         chmod -R +x $GITHUB_WORKSPACE/build/${{matrix.target}}
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
