@@ -89,7 +89,8 @@ jobs:
       working-directory: /workdir
       run: |
         git clone --depth 1 -b main https://github.com/281677160/common ${GITHUB_WORKSPACE}/build/common
-        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
+        mv -f ${GITHUB_WORKSPACE}/build/common/*.sh ${GITHUB_WORKSPACE}/build/${{matrix.target}}/
+        chmod -R +x ${GITHUB_WORKSPACE}/build
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
     
@@ -124,7 +125,6 @@ jobs:
  
     - name: 加载源,补丁和自定义设置
       run: |
-        mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
         source $BUILD_PATH/ceshi777.sh && Diy_settings
         cd openwrt
         source $BUILD_PATH/ceshi777.sh && menu
