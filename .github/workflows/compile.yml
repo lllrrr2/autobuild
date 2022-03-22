@@ -89,6 +89,7 @@ jobs:
       working-directory: /workdir
       run: |
         git clone --depth 1 -b main https://github.com/281677160/common $GITHUB_WORKSPACE/build/common
+        mv $GITHUB_WORKSPACE/build/common/*.sh $GITHUB_WORKSPACE/build/${Modelfile}
         chmod -R +x $GITHUB_WORKSPACE/build/common
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
@@ -122,6 +123,12 @@ jobs:
           echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
           exit 1
         fi
+        
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@master
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
  
     - name: 加载源,补丁和自定义设置
       run: |
