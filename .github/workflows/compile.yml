@@ -65,40 +65,7 @@ jobs:
         echo "AUTOMATIC_AMLOGIC=${AUTOMATIC_AMLOGIC}" >> $GITHUB_ENV
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
-        echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV 
-
-    - name: 公 告
-      run: |
-        echo
-        git clone --depth 1 -b main https://github.com/281677160/common build/common > /dev/null 2>&1
-        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
-        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
-          echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=amlogic" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "master" ]]; then
-          echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Lede" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "main" ]]; then
-          echo "ZZZ=package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Lienol" >> $GITHUB_ENV
-          echo "OpenWrt_name=20.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-          echo "ZZZ=package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
-          echo "CODE=Tianling" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06_tl" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-          echo "ZZZ=package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
-          echo "CODE=Mortal" >> $GITHUB_ENV
-          echo "OpenWrt_name=21.02" >> $GITHUB_ENV
-        else
-          echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
-          exit 1
-        fi
-        echo "NETIP=package/base-files/files/etc/networkip" >> $GITHUB_ENV
-        echo "DELETE=package/base-files/files/etc/deletefile" >> $GITHUB_ENV
-        source build/common/common.sh && Diy_gonggao
+        echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
 
     - name: 电报机器人或pushplus信息通知
       if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TELE'
@@ -127,35 +94,58 @@ jobs:
             sudo -E apt-get remove -y --purge azure-cli ghc zulu* hhvm llvm* firefox google* dotnet* powershell mysql* php* mssql-tools msodbcsql17 android*
             sudo rm -rf /etc/mysql /etc/php /swapfile
         fi
-    
+        
     - name: 下载"${{matrix.target}}"源码
-      working-directory: /${{matrix.target}}
+      working-directory: /workdir
       run: |
+        df -hT $PWD
+        git clone --depth 1 -b main https://github.com/281677160/common build/common
+        chmod -R 775 build
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
-        cd openwrt
-        ./scripts/feeds clean
-        ./scripts/feeds update -a > /dev/null 2>&1
-        ln -sf /${{matrix.target}}/openwrt $GITHUB_WORKSPACE/openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+    - name: 加载源,补丁和自定义设置
+      run: |
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
+        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         echo "Home=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
         echo "PATH1=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+        echo "NETIP=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/networkip" >> $GITHUB_ENV
+        echo "DELETE=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/deletefile" >> $GITHUB_ENV
+        if [[ "${REPO_BRANCH}" == "master" ]]; then
+          echo "ZZZ=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "CODE=Lede" >> $GITHUB_ENV
+          echo "DIYMC=Diy_lede" >> $GITHUB_ENV
+          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
+        elif [[ "${REPO_BRANCH}" == "main" ]]; then
+          echo "ZZZ=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "CODE=Lienol" >> $GITHUB_ENV
+          echo "DIYMC=Diy_lienol" >> $GITHUB_ENV
+          echo "OpenWrt_name=20.06" >> $GITHUB_ENV
+        elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
+          echo "ZZZ=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "CODE=Tianling" >> $GITHUB_ENV
+          echo "DIYMC=Diy_Tianling" >> $GITHUB_ENV
+          echo "OpenWrt_name=18.06_tl" >> $GITHUB_ENV
+        elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
+          echo "ZZZ=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "CODE=Mortal" >> $GITHUB_ENV
+          echo "DIYMC=Diy_mortal" >> $GITHUB_ENV
+          echo "OpenWrt_name=21.02" >> $GITHUB_ENV
+        else
+          echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
+          exit 1
+        fi
+        
+    - name: SSH远程连接（制作.config配置文件）
+      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
+      uses: danshui-git/debugger-action@master
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
  
     - name: 加载源,补丁和自定义设置
       run: |
-        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
-        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        mv -f "${Home}"/build/common/*.sh "${PATH1}"
-        source "${PATH1}/common.sh" && Diy_settings
-        cd openwrt
-        if [[ "${REPO_BRANCH}" == "master" ]]; then
-          source "${PATH1}/common.sh" && Diy_lede
-        elif [[ "${REPO_BRANCH}" == "main" ]]; then
-          source "${PATH1}/common.sh" && Diy_lienol
-        elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-          source "${PATH1}/common.sh" && Diy_Tianling
-        elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-          source "${PATH1}/common.sh" && Diy_mortal
-        fi
-        source "${PATH1}/common.sh" && Diy_all
         /bin/bash "${PATH1}/$DIY_PART_SH"
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
