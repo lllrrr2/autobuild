@@ -66,6 +66,34 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
         echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
+        
+    - name: 公 告
+      run: |
+        echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
+        echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+        echo "BASE_PATH=$GITHUB_WORKSPACE/openwrt/package/base-files/files" >> $GITHUB_ENV
+        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+        if [[ "${REPO_BRANCH}" == "master" ]]; then
+          echo "ZZZ_PATH=$Home/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Lede" >> $GITHUB_ENV
+          echo "YYYDDD=LEDE" >> $GITHUB_ENV
+          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
+        elif [[ "${REPO_BRANCH}" == "main" ]]; then
+          echo "ZZZ_PATH=$Home/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Lienol" >> $GITHUB_ENV
+          echo "OpenWrt_name=20.06" >> $GITHUB_ENV
+        elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
+          echo "ZZZ_PATH=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Tianling" >> $GITHUB_ENV
+          echo "OpenWrt_name=18.06_tl" >> $GITHUB_ENV
+        elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
+          echo "ZZZ_PATH=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "MAIN_TAIN=Mortal" >> $GITHUB_ENV
+          echo "OpenWrt_name=21.02" >> $GITHUB_ENV
+        else
+          echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
+          exit 1
+        fi
 
     - name: 部署编译环境
       env:
@@ -94,39 +122,10 @@ jobs:
         chmod -R +x $GITHUB_WORKSPACE/build/${{matrix.target}}
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
-
-
-    - name: 公 告
-      run: |
-        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
-        echo "BASE_PATH=$GITHUB_WORKSPACE/openwrt/package/base-files/files" >> $GITHUB_ENV
-        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
-        if [[ "${REPO_BRANCH}" == "master" ]]; then
-          echo "ZZZ_PATH=$Home/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "MAIN_TAIN=Lede" >> $GITHUB_ENV
-          echo "YYYDDD=LEDE" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "main" ]]; then
-          echo "ZZZ_PATH=$Home/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "MAIN_TAIN=Lienol" >> $GITHUB_ENV
-          echo "OpenWrt_name=20.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-          echo "ZZZ_PATH=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
-          echo "MAIN_TAIN=Tianling" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06_tl" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-          echo "ZZZ_PATH=$Home/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
-          echo "MAIN_TAIN=Mortal" >> $GITHUB_ENV
-          echo "OpenWrt_name=21.02" >> $GITHUB_ENV
-        else
-          echo "没发现该源码的分支，如果您没更改过的话，应该是上游仓库修改了，请同步上游仓库"
-          exit 1
-        fi
  
     - name: 加载源,补丁和自定义设置
       run: |
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         cd openwrt
         source $BUILD_PATH/ceshi777.sh && Diy_settings
         source $BUILD_PATH/ceshi777.sh && Diy_laku
