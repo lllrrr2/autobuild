@@ -74,7 +74,7 @@ jobs:
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc
         sudo -E apt-get -qq update -y
         sudo -E apt-get -qq full-upgrade -y
-        sudo -E apt-get -qq install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl rename libpcap0.8-dev swig rsync
+        sudo -E apt-get -qq install -y subversion build-essential libncurses5-dev openssl libssl-dev zlib1g-dev gawk git ccache gettext libssl-dev xsltproc zip git-core wget curl grep
         sudo -E apt-get -qq autoremove -y --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
@@ -126,10 +126,16 @@ jobs:
  
     - name: 加载源,补丁和自定义设置
       run: |
-        mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
-        source $BUILD_PATH/ceshi777.sh && Diy_settings
         cd openwrt
-        source $BUILD_PATH/ceshi777.sh && Diy_laku
+        mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
+        source $BUILD_PATH/ceshi777.sh && menu
+        
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@master
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        
     
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
       if: env.USE_CACHEWRTBUILD == 'true'
