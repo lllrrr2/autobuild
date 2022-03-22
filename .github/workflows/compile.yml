@@ -126,6 +126,8 @@ jobs:
         mv -f $HOME_PATH/build/common/*.sh $BUILD_PATH
         source $BUILD_PATH/ceshi777.sh && Diy_settings
         cd openwrt
+        ./scripts/feeds clean
+        ./scripts/feeds update -a
         source $BUILD_PATH/ceshi777.sh && Diy_laku
         source $BUILD_PATH/ceshi777.sh && Diy_lede
         source $BUILD_PATH/ceshi777.sh && Diy_default
