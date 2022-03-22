@@ -92,6 +92,7 @@ jobs:
         chmod -R +x "${GITHUB_WORKSPACE}/build/common"
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+    
     - name: 公 告
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
@@ -100,20 +101,20 @@ jobs:
         echo "BASE_PATH=${GITHUB_WORKSPACE}/openwrt/package/base-files/files" >> $GITHUB_ENV
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         if [[ "${REPO_BRANCH}" == "master" ]]; then
-          echo "ZZZ_PATH=$HOME_PATH/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "MAIN_TAIN=Lede" >> $GITHUB_ENV
           echo "YYYDDD=LEDE" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "main" ]]; then
-          echo "ZZZ_PATH=$HOME_PATH/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
+          echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "MAIN_TAIN=Lienol" >> $GITHUB_ENV
           echo "OpenWrt_name=20.06" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-          echo "ZZZ_PATH=$HOME_PATH/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
           echo "MAIN_TAIN=Tianling" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06_tl" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-          echo "ZZZ_PATH=$HOME_PATH/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
+          echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/emortal/default-settings/files/99-default-settings" >> $GITHUB_ENV
           echo "MAIN_TAIN=Mortal" >> $GITHUB_ENV
           echo "OpenWrt_name=21.02" >> $GITHUB_ENV
         else
