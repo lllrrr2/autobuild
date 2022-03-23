@@ -128,9 +128,8 @@ jobs:
  
     - name: 加载源,补丁和自定义设置
       run: |
-        source $BUILD_PATH/ceshi777.sh && Diy_settings
         cd openwrt
-        source $BUILD_PATH/ceshi777.sh && menu
+        source $BUILD_PATH/ceshi777.sh && Diy_menu
         
     - name: SSH远程连接（制作.config配置文件）
       uses: danshui-git/debugger-action@master
@@ -148,7 +147,7 @@ jobs:
     - name: 生成配置文件
       run: |
         cd openwrt
-        source "$BUILD_PATH/ceshi777.sh" && Diy_chajian > /dev/null 2>&1
+        source "$BUILD_PATH/ceshi777.sh" && Diy_menu2 > /dev/null 2>&1
         make defconfig > /dev/null 2>&1
         echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> $GITHUB_ENV
         echo "TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)" >> $GITHUB_ENV
