@@ -96,7 +96,7 @@ jobs:
     - name: 公 告
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        source $BUILD_PATH/ceshi777.sh && DIY_BIANLIANG
+        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/ceshi777.sh && DIY_BIANLIANG
  
     - name: 加载源,补丁和自定义设置
       run: |
