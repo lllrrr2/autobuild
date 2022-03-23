@@ -126,7 +126,6 @@ jobs:
     - name: 编译信息
       continue-on-error: true
       run: |
-        echo "TARGETBS=$HOME_PATH/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
         cd openwrt
         if [ "${BY_INFORMATION}" == "true" ]; then
           source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
@@ -175,21 +174,9 @@ jobs:
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ ! "${matrixtarget}" == "openwrt_amlogic" ]; then
-          cp -Rf "${HOME_PATH}"/bin/targets/*/* "${HOME_PATH}"/upgrade
-        fi
-        cd "${HOME_PATH}"/bin/targets/*/*
-        rename -v "s/^immortalwrt/openwrt/" *
-        if [[ -e ${GITHUB_WORKSPACE}/Clear ]]; then
-          cp -Rf ${GITHUB_WORKSPACE}/Clear ./
-          chmod +x Clear && source Clear
-          rm -rf Clear
-        fi
-        rm -rf packages
-        rename -v "s/^openwrt/${{ env.date1 }}-${{ env.SOURCE }}/" *
+        cd $TARGET_BSGET
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
-        echo "### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
         
     - name: 上传固件在 github actions
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
