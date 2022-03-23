@@ -136,11 +136,10 @@ jobs:
         
     - name: 编译信息
       continue-on-error: true
+      if: env.BY_INFORMATION == 'true'
       run: |
         cd openwrt
-        if [ "${BY_INFORMATION}" == "true" ]; then
-          source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
-        fi
+        source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
         
     - name: 下载软件包
       id: package
