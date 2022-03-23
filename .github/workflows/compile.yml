@@ -168,7 +168,7 @@ jobs:
       if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
         cd openwrt
-        source "${PATH1}/upgrade.sh" && Diy_Part2
+        source "${BUILD_PATH}/upgrade.sh" && Diy_Part2
         
     - name: 编译信息
       continue-on-error: true
@@ -200,7 +200,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       uses: actions/upload-artifact@v2
       with:
-        name: filename+ipk_${{ env.CODE }}_${{ env.TARGET_PROFILE }}_${{ env.Compile_Date }}
+        name: filename+ipk_${{ env.SOURCE }}_${{ env.TARGET_PROFILE }}_${{ env.Compile_Date }}
         path: openwrt/bin
         
     - name: 打包景晨系列固件(自动检测最新内核打包)
@@ -210,20 +210,20 @@ jobs:
         cd $GITHUB_WORKSPACE
         git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git amlogic
         [ -d amlogic/openwrt-armvirt ] || mkdir -p amlogic/openwrt-armvirt
-        cp -f ${Home}/bin/targets/*/*/*.tar.gz amlogic/openwrt-armvirt/ && sync
+        cp -f ${HOME_PATH}/bin/targets/*/*/*.tar.gz amlogic/openwrt-armvirt/ && sync
         cd amlogic
         sudo chmod +x make
         sudo ./make -d -b s905x3_s905x2_s905x_s905w_s905d_s922x_s912 -k 5.10.100_5.4.180 -a true
-        sudo mv -f $GITHUB_WORKSPACE/amlogic/out/* ${Home}/bin/targets/armvirt/64/ && sync
+        sudo mv -f $GITHUB_WORKSPACE/amlogic/out/* ${HOME_PATH}/bin/targets/armvirt/64/ && sync
         sudo rm -rf $GITHUB_WORKSPACE/amlogic
     
     - name: 整理固件文件夹
       id: organizer
       run: |
         if [ ! "${Modelfile}" == "openwrt_amlogic" ]; then
-          cp -Rf "${Home}"/bin/targets/*/* "${Home}"/upgrade
+          cp -Rf "${HOME_PATH}"/bin/targets/*/* "${HOME_PATH}"/upgrade
         fi
-        cd "${Home}"/bin/targets/*/*
+        cd "${HOME_PATH}"/bin/targets/*/*
         rename -v "s/^immortalwrt/openwrt/" *
         if [[ -e ${GITHUB_WORKSPACE}/Clear ]]; then
           cp -Rf ${GITHUB_WORKSPACE}/Clear ./
@@ -231,7 +231,7 @@ jobs:
           rm -rf Clear
         fi
         rm -rf packages
-        rename -v "s/^openwrt/${{ env.date1 }}-${{ env.CODE }}/" *
+        rename -v "s/^openwrt/${{ env.date1 }}-${{ env.SOURCE }}/" *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
         echo "### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
@@ -240,7 +240,7 @@ jobs:
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ env.OpenWrt_name }}-${{ env.CODE }}-${{ env.TARGET_PROFILE }}-firmware-${{ env.Compile_Date }}
+        name: ${{ env.LUCI_EDITION }}-${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}-firmware-${{ env.Compile_Date }}
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到「WeTransfer」
@@ -257,7 +257,7 @@ jobs:
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       uses: ncipollo/release-action@v1
       with:
-        name: ${{ env.CODE }}-${{ env.TARGET_PROFILE }}
+        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
         token: ${{ secrets.REPO_TOKEN }}
         bodyFile: "update_log.txt"
@@ -267,7 +267,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
        cd openwrt
-       source "${PATH1}/upgrade.sh" && Diy_Part3
+       source "${BUILD_PATH}/upgrade.sh" && Diy_Part3
         
     - name: 发送[在线更新固件]至云端2
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
@@ -300,7 +300,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || steps.compile.outputs.status == 'success' && env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TELE'
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "TELE" ]]; then
-          curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译的[${{ env.CODE }}-${{ env.TARGET_PROFILE }}]固件(${{env.CangKu}}仓库的#${{env.Run_number}}号)顺利编译完成了！💐" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+          curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译的[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]固件(${{env.CangKu}}仓库的#${{env.Run_number}}号)顺利编译完成了！
         elif [[ "${SERVERCHAN_SCKEY}" == "PUSH" ]]; then
-          curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="[${{ env.CODE }}-${{ env.TARGET_PROFILE }}]编译成功" --data "content=我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译的[${{ env.CODE }}-${{ env.TARGET_PROFILE }}]固件(${{env.CangKu}}仓库的#${{env.Run_number}}号)顺利编译完成了！💐" "http://www.pushplus.plus/send"
+          curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]编译成功" --data "content=我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译的[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]固件(${{env.CangKu}}仓库的#${{env.Run_number}}号)顺利编译完成了！
         fi
