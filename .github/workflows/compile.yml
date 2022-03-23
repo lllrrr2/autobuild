@@ -146,7 +146,7 @@ jobs:
     - name: 生成配置文件
       run: |
         cd openwrt
-        source "$BUILD_PATH/ceshi777.sh" && Diy_menu2 > /dev/null 2>&1
+        source $BUILD_PATH/ceshi777.sh && Diy_menu2
         make defconfig > /dev/null 2>&1
         echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> $GITHUB_ENV
         echo "TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)" >> $GITHUB_ENV
