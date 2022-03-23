@@ -132,7 +132,7 @@ jobs:
       if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
         cd openwrt
-        source "${BUILD_PATH}/upgrade.sh" && Diy_Part2
+        source "${BUILD_PATH}/pvehy.sh" && Diy_Part2
         
     - name: 编译信息
       continue-on-error: true
@@ -212,7 +212,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
        cd openwrt
-       source "${BUILD_PATH}/upgrade.sh" && Diy_Part3
+       source "${BUILD_PATH}/pvehy.sh" && Diy_Part3
         
     - name: 发送[在线更新固件]至云端2
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
