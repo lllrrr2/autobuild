@@ -21,7 +21,7 @@ on:
 env:
   Github: https://github.com/${{github.repository}}
   Author: ${{github.actor}}
-  Apidz: ${{github.repository}}
+  Warehouse: ${{github.repository}}
   Run_number: ${{github.run_number}}
   Run_workflow: ${{github.workflow}}
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
