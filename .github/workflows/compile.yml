@@ -108,6 +108,7 @@ jobs:
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         source ${GITHUB_WORKSPACE}/build/${matrixtarget}/ceshi777.sh && Diy_variable
+        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/ceshi777.sh && Diy_Notice
  
     - name: 加载源,补丁和自定义设置
       run: |
