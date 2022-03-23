@@ -66,6 +66,7 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
+    
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -102,12 +103,6 @@ jobs:
       run: |
         cd openwrt
         source $BUILD_PATH/ceshi777.sh && Diy_menu
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
       if: env.USE_CACHEWRTBUILD == 'true'
@@ -120,26 +115,6 @@ jobs:
       run: |
         cd openwrt
         source $BUILD_PATH/ceshi777.sh && Diy_menu2
-        make defconfig > /dev/null 2>&1
-        echo "TARGET_BOARD=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> $GITHUB_ENV
-        echo "TARGET_SUBTARGET=$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)" >> $GITHUB_ENV
-        echo "Compile_Date=$(date +%Y%m%d-%H%M)" >> $GITHUB_ENV
-        if [ `grep -c "CONFIG_TARGET_x86_64=y" .config` -eq '1' ]; then
-         echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
-        elif [[ `grep -c "CONFIG_TARGET_x86=y" .config` == '1' ]] && [[ `grep -c "CONFIG_TARGET_x86_64=y" .config` == '0' ]]; then
-         echo "TARGET_PROFILE=x86_32" >> $GITHUB_ENV
-        elif [ `grep -c "CONFIG_TARGET.*DEVICE.*=y" .config` -eq '1' ]; then
-          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-          [ -s DEVICE_NAME ] && echo "TARGET_PROFILE=$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        else
-          echo "TARGET_PROFILE=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> $GITHUB_ENV
-        fi
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         
     - name: 启用在线更新
       continue-on-error: true
