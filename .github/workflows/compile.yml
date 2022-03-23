@@ -164,22 +164,22 @@ jobs:
           echo "TARGET_PROFILE=$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)" >> $GITHUB_ENV
         fi
         
+    - name: 启用在线更新
+      continue-on-error: true
+      if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
+      run: |
+        cd openwrt
+        source "${PATH1}/upgrade.sh" && Diy_Part2
+        
     - name: 编译信息
       continue-on-error: true
       run: |
         cd openwrt
         source "$BUILD_PATH/ceshi777.sh" && Diy_chuli > /dev/null 2>&1
         if [ "${BY_INFORMATION}" == "true" ]; then
-          source "$BUILD_PATH/upgrade.sh" && GET_TARGET_INFO
           source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
         fi
         
-    - name: 启用在线更新
-      continue-on-error: true
-      if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
-      run: |
-        cd openwrt
-        source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
     - name: 下载软件包
       id: package
       run: |
