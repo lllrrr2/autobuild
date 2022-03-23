@@ -47,6 +47,17 @@ jobs:
     steps:
     - name: 准备结束
       uses: actions/checkout@v2
+      
+    - name: Package Armvirt as OpenWrt
+      uses: 281677160/common@main
+      with:
+        armvirt64_path: openwrt/bin/targets/*/*/*rootfs.tar.gz
+        
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@master
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: 读取脚本设置
       run: |
