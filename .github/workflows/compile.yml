@@ -139,6 +139,7 @@ jobs:
       if: env.BY_INFORMATION == 'true'
       run: |
         cd openwrt
+        source "${BUILD_PATH}/pvehy.sh" && GET_TARGET_INFO
         source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
         
     - name: 下载软件包
