@@ -162,8 +162,8 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.AUTOMATIC_AMLOGIC == 'true'
       run: |
         cd $GITHUB_WORKSPACE
+        source $BUILD_PATH/ceshi777.sh && Package_amlogic
 
-    
     - name: 整理固件文件夹
       id: organizer
       run: |
