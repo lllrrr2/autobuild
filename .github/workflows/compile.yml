@@ -178,7 +178,7 @@ jobs:
     - name: 编译信息
       continue-on-error: true
       run: |
-        TARGETBS="$HOME_PATH/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
+        echo "TARGETBS=$HOME_PATH/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
         cd openwrt
         if [ "${BY_INFORMATION}" == "true" ]; then
           source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
