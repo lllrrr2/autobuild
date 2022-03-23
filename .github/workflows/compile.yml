@@ -173,8 +173,8 @@ jobs:
     - name: 编译信息
       continue-on-error: true
       run: |
+        TARGETBS="$HOME_PATH/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
         cd openwrt
-        source "$BUILD_PATH/ceshi777.sh" && Diy_chuli > /dev/null 2>&1
         if [ "${BY_INFORMATION}" == "true" ]; then
           source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
         fi
@@ -187,6 +187,7 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+    
     - name: 开始编译固件
       id: compile
       run: |
@@ -196,6 +197,7 @@ jobs:
         echo "::set-output name=status::success"
         echo "date=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "date1=$(date +'%m-%d')" >> $GITHUB_ENV
+    
     - name: 上传bin文件夹(固件+ipk)在 github actions
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       uses: actions/upload-artifact@v2
@@ -220,7 +222,7 @@ jobs:
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ ! "${Modelfile}" == "openwrt_amlogic" ]; then
+        if [ ! "${matrixtarget}" == "openwrt_amlogic" ]; then
           cp -Rf "${HOME_PATH}"/bin/targets/*/* "${HOME_PATH}"/upgrade
         fi
         cd "${HOME_PATH}"/bin/targets/*/*
