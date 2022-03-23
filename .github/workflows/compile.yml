@@ -133,6 +133,7 @@ jobs:
       run: |
         cd openwrt
         source "${BUILD_PATH}/pvehy.sh" && Diy_Part2
+        cat $BASE_PATH/bin/openwrt_info
         
     - name: 编译信息
       continue-on-error: true
