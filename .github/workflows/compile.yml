@@ -104,7 +104,6 @@ jobs:
         if [[ "${REPO_BRANCH}" == "master" ]]; then
           echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "MAIN_TAIN=Lede" >> $GITHUB_ENV
-          echo "YYYDDD=LEDE" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06" >> $GITHUB_ENV
         elif [[ "${REPO_BRANCH}" == "main" ]]; then
           echo "ZZZ_PATH=${GITHUB_WORKSPACE}/openwrt/package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
