@@ -132,7 +132,7 @@ jobs:
       if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
         cd openwrt
-        source "${BUILD_PATH}/pvehy.sh" && Diy_Part2
+        source $BUILD_PATH/pvehy.sh && Diy_Part2
         cat $BASE_PATH/bin/openwrt_info
         
     - name: 编译信息
@@ -140,8 +140,8 @@ jobs:
       if: env.BY_INFORMATION == 'true'
       run: |
         cd openwrt
-        source "${BUILD_PATH}/pvehy.sh" && GET_TARGET_INFO
-        source "$BUILD_PATH/ceshi777.sh" && Diy_xinxi
+        source $BUILD_PATH/pvehy.sh && GET_TARGET_INFO
+        source $BUILD_PATH/ceshi777.sh && Diy_xinxi
         
     - name: 下载软件包
       id: package
@@ -218,7 +218,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
        cd openwrt
-       source "${BUILD_PATH}/pvehy.sh" && Diy_Part3
+       source $BUILD_PATH/pvehy.sh && Diy_Part3
         
     - name: 发送[在线更新固件]至云端2
       continue-on-error: true
