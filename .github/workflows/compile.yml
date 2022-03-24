@@ -189,7 +189,7 @@ jobs:
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}-firmware-${{ env.Compile_Date }}
+        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}-firmware-${{ env.Firmware_Date }}
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到「WeTransfer」
