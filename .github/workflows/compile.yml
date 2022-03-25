@@ -95,24 +95,6 @@ jobs:
           curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="开始编译【${{matrix.target}}】" --data "content=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.Library}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋💐" "http://www.pushplus.plus/send"
         fi
     
-    - name: 发送[在线更新固件]至云端3
-      continue-on-error: true
-      run: |
-        mkdir -p Github_Tags
-        cd Github_Tags
-        wget -q --no-cookie --no-check-certificate https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O Github_Tags
-        
-    - name: 发送[在线更新固件]至云端4
-      continue-on-error: true
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.REPO_TOKEN }}
-        file: Github_Tags/*
-        tag: AutoUpdate
-        overwrite: true
-        file_glob: true
-    
-    
     - name: 下载"${{matrix.target}}"源码
       working-directory: /workdir
       run: |
@@ -125,13 +107,13 @@ jobs:
     - name: 公 告
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/ceshi777.sh && Diy_variable
-        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/ceshi777.sh && Diy_Notice
+        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/common.sh && Diy_variable
+        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/common.sh && Diy_Notice
  
     - name: 加载源,补丁和自定义设置
       run: |
         cd openwrt
-        source $BUILD_PATH/ceshi777.sh && Diy_menu
+        source $BUILD_PATH/common.sh && Diy_menu
     
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
       if: env.USE_CACHEWRTBUILD == 'true'
@@ -143,14 +125,14 @@ jobs:
     - name: 生成配置文件
       run: |
         cd openwrt
-        source $BUILD_PATH/ceshi777.sh && Diy_menu2
+        source $BUILD_PATH/common.sh && Diy_menu2
         
     - name: 启用在线更新
       continue-on-error: true
       if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
         cd openwrt
-        source $BUILD_PATH/pvehy.sh && Diy_Part2
+        source $BUILD_PATH/upgrade.sh && Diy_Part2
         cat $BASE_PATH/bin/openwrt_info
         
     - name: 编译信息
@@ -158,8 +140,8 @@ jobs:
       if: env.BY_INFORMATION == 'true'
       run: |
         cd openwrt
-        source $BUILD_PATH/pvehy.sh && GET_TARGET_INFO
-        source $BUILD_PATH/ceshi777.sh && Diy_xinxi
+        source $BUILD_PATH/upgrade.sh && GET_TARGET_INFO
+        source $BUILD_PATH/common.sh && Diy_xinxi
         
     - name: 下载软件包
       id: package
@@ -191,13 +173,13 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.AUTOMATIC_AMLOGIC == 'true'
       run: |
         cd $GITHUB_WORKSPACE
-        source $BUILD_PATH/ceshi777.sh && Package_amlogic
+        source $BUILD_PATH/common.sh && Package_amlogic
 
     - name: 整理固件文件夹
       continue-on-error: true
       id: organizer
       run: |
-        source $BUILD_PATH/ceshi777.sh && Diy_firmware
+        source $BUILD_PATH/common.sh && Diy_firmware
         cd $TARGET_BSGET
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
@@ -236,7 +218,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
       run: |
        cd openwrt
-       source $BUILD_PATH/pvehy.sh && Diy_Part3
+       source $BUILD_PATH/upgrade.sh && Diy_Part3
         
     - name: 发送[在线更新固件]至云端2
       continue-on-error: true
