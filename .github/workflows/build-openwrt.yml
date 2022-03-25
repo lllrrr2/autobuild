@@ -137,6 +137,7 @@ jobs:
       run: |
         cd openwrt
         source $BUILD_PATH/common.sh && Diy_menu2
+        make defconfig > /dev/null 2>&1
         ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/config.txt
         echo "::set-output name=status::success"
         
