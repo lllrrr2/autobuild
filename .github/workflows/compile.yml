@@ -16,7 +16,7 @@ on:
     branches:
       - main
     paths:
-      - 'build/openwrt_amlogic/start-up/start'
+      - 'build/Mortal_source/start-up/start'
 
 env:
   Github: https://github.com/${{github.repository}}
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Lede_source]
+        target: [Mortal_source]
         
         # [Lede_source,Lienol_source,Mortal_source,Tianling_source,openwrt_amlogic]
 
@@ -99,7 +99,7 @@ jobs:
       working-directory: /${{matrix.target}}
       run: |
         git clone --depth 1 -b main https://github.com/281677160/common ${GITHUB_WORKSPACE}/build/common
-        mv -f ${GITHUB_WORKSPACE}/build/common/*.sh ${GITHUB_WORKSPACE}/build/${matrixtarget}/
+        mv -f ${GITHUB_WORKSPACE}/build/common/*.sh ${GITHUB_WORKSPACE}/build/${{matrix.target}}/
         chmod -R +x ${GITHUB_WORKSPACE}/build
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /${{matrix.target}}/openwrt $GITHUB_WORKSPACE/openwrt
@@ -107,8 +107,8 @@ jobs:
     - name: 公 告
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/common.sh && Diy_variable
-        source ${GITHUB_WORKSPACE}/build/${matrixtarget}/common.sh && Diy_Notice
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_variable
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_Notice
  
     - name: 加载源,补丁和自定义设置
       run: |
