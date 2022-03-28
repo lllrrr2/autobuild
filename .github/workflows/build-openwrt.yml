@@ -93,7 +93,7 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
-        echo "inputsdays=${{ github.event.inputs.days }} >> $GITHUB_ENV
+        echo "inputsdays=${{ github.event.inputs.days }}" >> $GITHUB_ENV
         
     - name: Initialization Variables
       run: |
