@@ -38,12 +38,6 @@ on:
 #   - cron: 0 9 * * *
 
 env:
-  BILDYML: build-openwrt.yml
-  
-  # 多开build-openwrt.yml时把上面build-openwrt.yml同步改成你新建立的文件名称
-  # 比如你新建立的文件叫x86-openwrt.yml，你就把BILDYML: build-openwrt.yml改成BILDYML: x86-openwrt.yml
-  # 多开build-openwrt.yml时，要把最上面的‘触发compile启动编译’也随便改一下，不重覆就可以了
-
   Github: https://github.com/${{github.repository}}
   Author: ${{github.actor}}
   Warehouse: ${{github.repository}}
@@ -162,6 +156,9 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         git clone -b main https://github.com/${{github.repository}}.git ${{matrix.target}}
+        export TARGE1="$(grep 'target: \[' ${{matrix.target}}/.github/workflows/compile.yml |sed 's/^[ ]*//g' |grep '^target' |cut -d '#' -f1 |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
+        export TARGE2="target: \\[${{matrix.target}}\\]"
+        sed -i "s/${TARGE1}/${TARGE2}/g" ${{matrix.target}}/.github/workflows/compile.yml
         cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${CONFIG_FILE}
         mkdir -p ${{matrix.target}}/build/${{matrix.target}}/start-up
         echo "${{env.SOURCE}}于$(date +%Y年%m月%d号%H时%M分%S秒)自动触发编译${{env.TARGET_PROFILE}}固件" > ${{matrix.target}}/build/${{matrix.target}}/start-up/start
