@@ -92,6 +92,11 @@ jobs:
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
         
+    - name: Initialization Variables
+      run: |
+         [ ${{ github.event.inputs.days }} ] && echo "retain_days=${{ github.event.inputs.days }}" >> $GITHUB_ENV || echo "retain_days=10" >> $GITHUB_ENV
+         [ ${{ github.event.inputs.rele }} ] && echo "keep_latest=${{ github.event.inputs.rele }}" >> $GITHUB_ENV || echo "keep_latest=10" >> $GITHUB_ENV
+        
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -232,14 +237,14 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
           keep_minimum_runs: 0
-          retain_days: ${{ github.event.inputs.days }}
+          retain_days: ${{ env.github.event.inputs.days }}
     
     - name: 删除releases
       if: env.REPO_TOKEN
       uses: dev-drprasad/delete-older-releases@master
       with:
         repo: ${{ github.repository }}
-        keep_latest: ${{ github.event.inputs.rele }}
+        keep_latest: ${{ env.github.event.inputs.rele }}
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
