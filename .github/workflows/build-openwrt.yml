@@ -164,7 +164,7 @@ jobs:
           sed -i "s/${QIDONG1}/${QIDONG2}/g" ${{matrix.target}}/.github/workflows/compile.yml
           sed -i "s/${TARGE1}/${TARGE2}/g" ${{matrix.target}}/.github/workflows/compile.yml
         fi
-        cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${CONFIG_FILE}
+        cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${{env.CONFIG_FILE}}
         mkdir -p ${{matrix.target}}/build/${{matrix.target}}/start-up
         echo "${{env.SOURCE}}于$(date +%Y年%m月%d号%H时%M分%S秒)自动触发编译${{env.TARGET_PROFILE}}固件" > ${{matrix.target}}/build/${{matrix.target}}/start-up/start
         cd ${{matrix.target}}
