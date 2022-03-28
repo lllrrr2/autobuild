@@ -92,6 +92,14 @@ jobs:
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
         
+    - name: Initialization Variables
+      run: |
+        if [ -z "${{ github.event.inputs.days }}" && -z "${{ github.event.inputs.rele }}" ]
+        then
+          echo "retain_days=14" >> $GITHUB_ENV
+          echo "keep_latest=20" >> $GITHUB_ENV
+        fi
+        
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
