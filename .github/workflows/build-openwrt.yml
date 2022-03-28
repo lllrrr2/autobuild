@@ -96,8 +96,7 @@ jobs:
         
     - name: Initialization Variables
       run: |
-        if [ -z "${{ github.event.inputs.days }}" && -z "${{ github.event.inputs.rele }}" ]
-        then
+        if [ -z "${{ github.event.inputs.days }}" ] && [ -z "${{ github.event.inputs.rele }}" ]; then
           echo "retain_days=14" >> $GITHUB_ENV
           echo "keep_latest=20" >> $GITHUB_ENV
         fi
