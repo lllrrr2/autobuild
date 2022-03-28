@@ -101,8 +101,8 @@ jobs:
            echo "retain_day=10" >> $GITHUB_ENV
            echo "keep_lates=10" >> $GITHUB_EN
          else
-           echo "retain_day=${{ github.event.inputs.days }}" >> $GITHUB_ENV
-           echo "keep_lates=${{ github.event.inputs.rele }}" >> $GITHUB_ENV
+           echo "retain_day=${{ env.inputsdays }}" >> $GITHUB_ENV
+           echo "keep_lates=${{ env.inputsdays }}" >> $GITHUB_ENV
          fi
         
     - name: 部署编译环境
