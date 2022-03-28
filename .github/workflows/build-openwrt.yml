@@ -92,6 +92,13 @@ jobs:
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
         
+    - name: Initialization Variables
+      run: |
+        if [ -z "${{ github.event.inputs.days }}" ] && [ -z "${{ github.event.inputs.rele }}" ]; then
+          echo "github.event.inputs.days=14" >> $GITHUB_ENV
+          echo "github.event.inputs.rele=20" >> $GITHUB_ENV
+        fi
+        
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -232,14 +239,14 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
           keep_minimum_runs: 0
-          retain_days: ${{ github.event.inputs.days }}
+          retain_days: ${github.event.inputs.days}
     
     - name: 删除releases
       if: env.REPO_TOKEN
       uses: dev-drprasad/delete-older-releases@master
       with:
         repo: ${{ github.repository }}
-        keep_latest: ${{ github.event.inputs.rele }}
+        keep_latest: ${github.event.inputs.rele}
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
