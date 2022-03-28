@@ -85,14 +85,14 @@ jobs:
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
         
-    - name: Initialization Variables
+    - name: 定时启动编译时清理Actions空间和删除releases数值设置
       run: |
-         if [ -z ${{ github.event.inputs.days }} ] && [ -z ${{ github.event.inputs.rele }} ]; then
-           echo "retain_day=8" >> $GITHUB_ENV
-           echo "keep_lates=10" >> $GITHUB_ENV
+         if [[ -z ${{ github.event.inputs.days }} ]] && [[ -z ${{ github.event.inputs.rele }} ]]; then
+           echo "retain_days=7" >> $GITHUB_ENV
+           echo "keep_latest=10" >> $GITHUB_ENV
          else
-           echo "retain_day=${{ github.event.inputs.days }}" >> $GITHUB_ENV
-           echo "keep_lates=${{ github.event.inputs.rele }}" >> $GITHUB_ENV
+           echo "retain_days=${{ github.event.inputs.days }}" >> $GITHUB_ENV
+           echo "keep_latest=${{ github.event.inputs.rele }}" >> $GITHUB_ENV
          fi
         
     - name: 部署编译环境
@@ -158,10 +158,12 @@ jobs:
         git clone -b main https://github.com/${{github.repository}}.git ${{matrix.target}}
         export TARGE1="$(grep 'target: \[' ${{matrix.target}}/.github/workflows/compile.yml |sed 's/^[ ]*//g' |grep '^target' |cut -d '#' -f1 |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
         export TARGE2="target: \\[${{matrix.target}}\\]"
-        export QIDONG1="$(grep -A 1 'paths:' shangyouck/.github/workflows/compile.yml |awk 'NR==2' |sed 's/^[ ]*//g' |sed 's/\//\\&/g')"
+        export QIDONG1="$(grep -A 1 'paths:' ${{matrix.target}}/.github/workflows/compile.yml |awk 'NR==2' |sed 's/^[ ]*//g' |sed 's/\//\\&/g')"
         export QIDONG2="- 'build\/${{matrix.target}}\/start-up\/start'"
-        sed -i "s/${QIDONG1}/${QIDONG2}/g" ${{matrix.target}}/.github/workflows/compile.yml
-        sed -i "s/${TARGE1}/${TARGE2}/g" ${{matrix.target}}/.github/workflows/compile.yml
+        if [[ -n ${QIDONG1} ]] && [[ -n ${TARGE1} ]]; then
+          sed -i "s/${QIDONG1}/${QIDONG2}/g" ${{matrix.target}}/.github/workflows/compile.yml
+          sed -i "s/${TARGE1}/${TARGE2}/g" ${{matrix.target}}/.github/workflows/compile.yml
+        fi
         cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${CONFIG_FILE}
         mkdir -p ${{matrix.target}}/build/${{matrix.target}}/start-up
         echo "${{env.SOURCE}}于$(date +%Y年%m月%d号%H时%M分%S秒)自动触发编译${{env.TARGET_PROFILE}}固件" > ${{matrix.target}}/build/${{matrix.target}}/start-up/start
@@ -185,14 +187,14 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
           keep_minimum_runs: 0
-          retain_days: ${{ env.retain_day }}
+          retain_days: ${{ env.retain_days }}
     
     - name: 删除releases
       if: env.REPO_TOKEN
       uses: dev-drprasad/delete-older-releases@master
       with:
         repo: ${{ github.repository }}
-        keep_latest: ${{ env.keep_lates }}
+        keep_latest: ${{ env.keep_latest }}
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
