@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Lede_source]
+        target: [Lienol_source]
 
         # [Lede_source,Lienol_source,Mortal_source,Tianling_source,openwrt_amlogic]
 
@@ -158,6 +158,9 @@ jobs:
         git clone -b main https://github.com/${{github.repository}}.git ${{matrix.target}}
         export TARGE1="$(grep 'target: \[' ${{matrix.target}}/.github/workflows/compile.yml |sed 's/^[ ]*//g' |grep '^target' |cut -d '#' -f1 |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
         export TARGE2="target: \\[${{matrix.target}}\\]"
+        export QIDONG1="$(grep -A 1 'paths:' shangyouck/.github/workflows/compile.yml |awk 'NR==2' |sed 's/^[ ]*//g' |sed 's/\//\\&/g')"
+        export QIDONG2="- 'build\/${{matrix.target}}\/start-up\/start'"
+        sed -i "s/${QIDONG1}/${QIDONG2}/g" ${{matrix.target}}/.github/workflows/compile.yml
         sed -i "s/${TARGE1}/${TARGE2}/g" ${{matrix.target}}/.github/workflows/compile.yml
         cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${CONFIG_FILE}
         mkdir -p ${{matrix.target}}/build/${{matrix.target}}/start-up
