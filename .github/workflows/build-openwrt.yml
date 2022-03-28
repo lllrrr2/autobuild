@@ -99,7 +99,7 @@ jobs:
       run: |
          if [ -z ${{ env.inputsdays }} ]; then
            echo "retain_day=10" >> $GITHUB_ENV
-           echo "keep_lates=10" >> $GITHUB_EN
+           echo "keep_lates=10" >> $GITHUB_ENV
          else
            echo "retain_day=${{ env.inputsdays }}" >> $GITHUB_ENV
            echo "keep_lates=${{ env.inputsdays }}" >> $GITHUB_ENV
