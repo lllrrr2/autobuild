@@ -96,12 +96,12 @@ jobs:
         
     - name: Initialization Variables
       run: |
-         if [ -z ${{ github.event.inputs.days }} ]; then
+         if [ -z ${{ github.event.inputs.days }} && -z ${{ github.event.inputs.rele }} ]; then
            echo "retain_day=10" >> $GITHUB_ENV
            echo "keep_lates=10" >> $GITHUB_ENV
          else
-           echo "retain_day=${{ env.inputsdays }}" >> $GITHUB_ENV
-           echo "keep_lates=${{ env.inputsdays }}" >> $GITHUB_ENV
+           echo "retain_day=${{ github.event.inputs.days }}" >> $GITHUB_ENV
+           echo "keep_lates=${{ github.event.inputs.rele }}" >> $GITHUB_ENV
          fi
         
     - name: 部署编译环境
