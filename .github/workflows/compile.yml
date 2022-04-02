@@ -116,10 +116,10 @@ jobs:
         fi
         if [[ "${SERVERCHAN_SCKEY}" == "PUSH" ]]; then
           if [[ "${{steps.common.outcome}}" != 'success' ]]; then
-            curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="" --data "content=❌ 主人：上游扩展错误,启动编译失败!" "http://www.pushplus.plus/send"
+            curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="编译失败" --data "content=❌ 主人：上游扩展错误,启动编译失败!" "http://www.pushplus.plus/send"
             exit 1
           else
-            curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="" --data "content=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.Library}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋💐" "http://www.pushplus.plus/send"
+            curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="开始编译【${{matrix.target}}】" --data "content=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.Library}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋💐" "http://www.pushplus.plus/send"
           fi
         fi
  
