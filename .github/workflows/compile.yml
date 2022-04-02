@@ -67,7 +67,6 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
-        echo "::set-output name=status::success"
         
     - name: 发送[在线更新固件]至云端2
       id: organiz
@@ -84,6 +83,7 @@ jobs:
       if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TG'
       run: |
         echo "${{steps.organiz.outcome}}"
+        echo "${{steps.organize.outcome}}"
         if [ "${{steps.organize.outputs.status}}" == 'success' ]; then
           curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.Library}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
         else
