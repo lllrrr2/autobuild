@@ -67,13 +67,12 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
-        echo "::set-output name=status::success"
     
     
     
     - name: 电报机器人或pushplus信息通知
       run: |
-          if [ steps.ceshi.outputs.status == 'success' ]; then
+          if [ steps.ceshi.outcome == 'success' ]; then
             curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="编译成功" --data "content=固件(${{env.Library}}仓库的#${{env.Run_number}}号)顺利编译完成了！💐" "http://www.pushplus.plus/send"
           else  
             curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="编译成功" --data "content=失败" "http://www.pushplus.plus/send"
