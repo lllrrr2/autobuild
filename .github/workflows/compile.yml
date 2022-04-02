@@ -67,6 +67,7 @@ jobs:
         echo "BY_INFORMATION=${BY_INFORMATION}" >> $GITHUB_ENV
         echo "Library=${Warehouse##*/}" >> $GITHUB_ENV
         echo "matrixtarget=${{matrix.target}}" >> $GITHUB_ENV
+        echo "::set-output name=ceshi::success"
     
     
     
