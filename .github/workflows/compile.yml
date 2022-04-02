@@ -82,9 +82,7 @@ jobs:
     - name: 电报机器人或pushplus信息通知
       if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TG'
       run: |
-        echo "${{steps.organiz.outcome}}"
-        echo "${{steps.organize.outcome}}"
-        if [ "${{steps.organize.outputs.status}}" == 'success' ]; then
+        if [ "${{steps.organiz.outcome}}" != 'success' ]; then
           curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.Library}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
         else
           echo "${steps.compile.outputs.status}"
