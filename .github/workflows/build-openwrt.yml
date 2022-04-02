@@ -126,8 +126,8 @@ jobs:
       continue-on-error: true
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_vari
-        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_Not
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_variable
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_Notice
  
     - name: 加载源,补丁和自定义设置
       id: compile
@@ -144,14 +144,12 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: 生成"${{matrix.target}}"配置文件
-      id: compileop
       continue-on-error: true
       run: |
         cd openwrt
         source $BUILD_PATH/common.sh && Diy_menu2
         ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/${CONFIG_FILE}
         cp -Rf ${GITHUB_WORKSPACE}/${CONFIG_FILE} ${GITHUB_WORKSPACE}/config.txt
-        echo "::set-output name=status::success"
         
     - name: 上传.config配置文件在 github actions
       continue-on-error: true
@@ -191,7 +189,7 @@ jobs:
           if [[ "${{steps.clone.outcome}}" == 'success' ]] && [[ "${{steps.gitpush.outcome}}" == 'success' ]] && [[ "${{steps.compile.outcome}}" == 'success' ]]; then
             curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{env.TARGET_PROFILE}}】固件中,请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
           else
-            curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 主人：下载源码错误或者上游扩展错误,触发【${{matrix.target}}】编译失败!" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+            curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 主人：上游扩展错误或者下载源码错误,触发启动【${{matrix.target}}】编译失败!" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
             exit 1
           fi
         fi
@@ -199,7 +197,7 @@ jobs:
           if [[ "${{steps.clone.outcome}}" == 'success' ]] && [[ "${{steps.gitpush.outcome}}" == 'success' ]] && [[ "${{steps.compile.outcome}}" == 'success' ]]; then
             curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="开始编译【${{matrix.target}}】" --data "content=🎉 主人：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{env.TARGET_PROFILE}}】固件中,请耐心等待...... 😋💐" "http://www.pushplus.plus/send"
           else
-            curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="编译失败" --data "content=❌ 主人：上游扩展错误,启动【${{matrix.target}}】编译失败!" "http://www.pushplus.plus/send"
+            curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="触发启动失败" --data "content=❌ 主人：上游扩展错误或者下载源码错误,触发启动【${{matrix.target}}】编译失败!" "http://www.pushplus.plus/send"
             exit 1
           fi
         fi
