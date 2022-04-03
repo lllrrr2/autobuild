@@ -134,7 +134,7 @@ jobs:
       continue-on-error: true
       run: |
         cd openwrt
-        source $BUILD_PATH/common.sh && Diy_menu
+        source $BUILD_PATH/common.sh && Diy_menu1
         
     - name: SSH远程连接（制作.config配置文件）
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
