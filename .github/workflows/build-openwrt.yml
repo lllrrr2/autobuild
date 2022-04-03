@@ -134,7 +134,7 @@ jobs:
       continue-on-error: true
       run: |
         cd openwrt
-        source $BUILD_PATH/common.sh && Diy_menu1
+        source $BUILD_PATH/common.sh && Diy_menu
         
     - name: SSH远程连接（制作.config配置文件）
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
@@ -202,7 +202,7 @@ jobs:
             curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的❌主人❌：您使用【${{matrix.target}}】文件夹编译的[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]固件(${{env.Library}}仓库的#${{env.Run_number}}号)编译失败😴！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
           elif [[ "${{steps.compile.outcome}}" == 'success' ]] && [[ "${{steps.regular.outcome}}" == 'success' ]]; then
             curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✈️：您使用【${{matrix.target}}】文件夹编译的[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]固件(${{env.Library}}仓库的#${{env.Run_number}}号)顺利编译成功,发布云端在线更新使用的固件成功!🎈" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
-          elif [[ "${{steps.compile.outcome}}" == 'success' ]] && [[ "${{steps.regular.outcome}}" == 'skipped' ]]; then
+          elif [[ "${{steps.compile.outcome}}" == 'success' ]] && [[ "${{steps.gitpush.outcome}}" == 'success' ]]; then
             curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译的[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]固件💐(${{env.Library}}仓库的#${{env.Run_number}}号)顺利编译完成了💯！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
           elif [[ "${{steps.compile.outcome}}" == 'success' ]] && [[ "${{steps.regular.outcome}}" == 'failure' ]]; then  
             curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人❌：您使用【${{matrix.target}}】文件夹编译的[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]固件(${{env.Library}}仓库的#${{env.Run_number}}号)顺利编译成功,❌但是发布云端在线更新使用的固件失败了❌！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
