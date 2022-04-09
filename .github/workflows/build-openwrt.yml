@@ -110,6 +110,16 @@ jobs:
         overwrite: true
         file_glob: true
         
+    - name: 删除releases
+      if: env.REPO_TOKEN
+      uses: dev-drprasad/delete-older-releases@master
+      with:
+        repo: ${{ github.repository }}
+        keep_latest: ${{ env.keep_latest }}
+        delete_tags: Auto
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}  
+        
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
