@@ -106,7 +106,7 @@ jobs:
       with:
         repo_token: ${{ secrets.REPO_TOKEN }}
         file: ${GITHUB_WORKSPACE}/1234
-        tag: Auto2
+        tag: Auto3
         overwrite: true
         file_glob: true
         
