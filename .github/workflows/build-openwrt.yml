@@ -225,6 +225,6 @@ jobs:
       with:
         repo: ${{ github.repository }}
         keep_latest: ${{ env.keep_latest }}
-        delete_tags: true
+        delete_tags: AutoUpdate
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
