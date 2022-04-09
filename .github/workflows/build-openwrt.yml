@@ -97,6 +97,18 @@ jobs:
            echo "retain_days=${{ github.event.inputs.days }}" >> $GITHUB_ENV
            echo "keep_latest=${{ github.event.inputs.rele }}" >> $GITHUB_ENV
          fi
+         echo "123" > ${GITHUB_WORKSPACE}/1234
+        
+    - name: 发送[在线更新固件]至云端1
+      id: regular
+      continue-on-error: true
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.REPO_TOKEN }}
+        file: ${GITHUB_WORKSPACE}/1234
+        tag: Auto
+        overwrite: true
+        file_glob: true
         
     - name: 部署编译环境
       env:
