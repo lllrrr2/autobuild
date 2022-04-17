@@ -55,6 +55,7 @@ jobs:
         mv -f ${GITHUB_WORKSPACE}/build/common/*.sh ${GITHUB_WORKSPACE}/build/${{matrix.target}}/
         chmod -R +x ${GITHUB_WORKSPACE}/build
         source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_repo_url
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_settings
     
     - name: 部署编译环境
       env:
