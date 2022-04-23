@@ -44,8 +44,12 @@ jobs:
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
+        mkdir -p repogx
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './repogx' ! -path './'` repogx
+        cp -Rf .github repogx
         git clone -b main https://github.com/281677160/build-actions.git shangyou
-        git clone -b main https://github.com/${{github.repository}}.git repogx
+        
+        
         if [[ -d repogx/build/Lede_source ]];then
           rm -rf shangyou/build/Lede_source/.config
         fi
