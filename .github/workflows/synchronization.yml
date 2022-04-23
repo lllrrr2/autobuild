@@ -57,11 +57,11 @@ jobs:
         cp -Rf $GITHUB_WORKSPACE/shangyou/build/openwrt_amlogic/* ${GITHUB_WORKSPACE}/openwrt/build/openwrt_amlogic/
         
         cd ${GITHUB_WORKSPACE}/openwrt
-        git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/compile.yml
+        git rm -rf $GITHUB_WORKSPACE/openwrt/.github/workflows/compile.yml
         cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/compile.yml .github/workflows/compile.yml
-        git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/build-openwrt.yml
+        git rm -rf $GITHUB_WORKSPACE/openwrt/.github/workflows/build-openwrt.yml
         cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/build-openwrt.yml .github/workflows/build-openwrt.yml
-        git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/synchronization.yml
+        git rm -rf $GITHUB_WORKSPACE/openwrt/.github/workflows/synchronization.yml
         cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/synchronization.yml .github/workflows/synchronization.yml
         git add .
         git commit -m "同步上游281677160/build-actions于$(date +%Y年%m月%d号%H时%M分%S秒)"
