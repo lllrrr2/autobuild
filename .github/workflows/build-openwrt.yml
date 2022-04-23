@@ -159,9 +159,9 @@ jobs:
           sed -i "s/${QIDONG1}/${QIDONG2}/g" .github/workflows/compile.yml
           sed -i "s/${TARGE1}/${TARGE2}/g" .github/workflows/compile.yml
         fi
-        cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${{env.CONFIG_FILE}}
-        mkdir -p ${{matrix.target}}/build/${{matrix.target}}/start-up
-        echo "${{ env.SOURCE }}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${{matrix.target}}/build/${{matrix.target}}/start-up/start
+        cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} build/${{matrix.target}}/${{env.CONFIG_FILE}}
+        mkdir -p build/${{matrix.target}}/start-up
+        echo "${{ env.SOURCE }}$(date +%Y年%m月%d号%H时%M分%S秒)" > build/${{matrix.target}}/start-up/start
         git add .
         git commit -m "启动${{matrix.target}}编译${{env.TARGET_PROFILE}}固件"
         git push --force "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
