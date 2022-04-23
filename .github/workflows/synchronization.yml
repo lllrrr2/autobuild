@@ -54,7 +54,8 @@ jobs:
         for X in $(grep "\"LIENOL\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lienol_source/* "${X}"; done
         for X in $(grep "\"IMMORTAL\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Mortal_source/* "${X}"; done
         for X in $(grep "\"TIANLING\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Tianling_source/* "${X}"; done
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/* ${GITHUB_WORKSPACE}/openwrt/.github
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/* ${GITHUB_WORKSPACE}/openwrt/.github/
+        cp -Rf $GITHUB_WORKSPACE/shangyou/build/openwrt_amlogic/* ${GITHUB_WORKSPACE}/openwrt/build/openwrt_amlogic/
         
         cd ${GITHUB_WORKSPACE}/openwrt
         git add .
