@@ -151,19 +151,17 @@ jobs:
       if: steps.clone.outcome == 'success' && steps.compile.outcome == 'success' && env.REPO_TOKEN
       run: |
         cd $GITHUB_WORKSPACE
-        git clone -b main https://github.com/${{github.repository}}.git ${{matrix.target}}
-        export TARGE1="$(grep 'target: \[' ${{matrix.target}}/.github/workflows/compile.yml |sed 's/^[ ]*//g' |grep '^target' |cut -d '#' -f1 |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
+        export TARGE1="$(grep 'target: \[' .github/workflows/compile.yml |sed 's/^[ ]*//g' |grep '^target' |cut -d '#' -f1 |sed 's/\[/\\&/' |sed 's/\]/\\&/')"
         export TARGE2="target: \\[${{matrix.target}}\\]"
-        export QIDONG1="$(grep -A 1 'paths:' ${{matrix.target}}/.github/workflows/compile.yml |awk 'NR==2' |sed 's/^[ ]*//g' |sed 's/\//\\&/g')"
+        export QIDONG1="$(grep -A 1 'paths:' .github/workflows/compile.yml |awk 'NR==2' |sed 's/^[ ]*//g' |sed 's/\//\\&/g')"
         export QIDONG2="- 'build\/${{matrix.target}}\/start-up\/start'"
         if [[ -n ${QIDONG1} ]] && [[ -n ${TARGE1} ]]; then
-          sed -i "s/${QIDONG1}/${QIDONG2}/g" ${{matrix.target}}/.github/workflows/compile.yml
-          sed -i "s/${TARGE1}/${TARGE2}/g" ${{matrix.target}}/.github/workflows/compile.yml
+          sed -i "s/${QIDONG1}/${QIDONG2}/g" .github/workflows/compile.yml
+          sed -i "s/${TARGE1}/${TARGE2}/g" .github/workflows/compile.yml
         fi
         cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${{matrix.target}}/build/${{matrix.target}}/${{env.CONFIG_FILE}}
         mkdir -p ${{matrix.target}}/build/${{matrix.target}}/start-up
         echo "${{ env.SOURCE }}$(date +%Y年%m月%d号%H时%M分%S秒)" > ${{matrix.target}}/build/${{matrix.target}}/start-up/start
-        cd ${{matrix.target}}
         git add .
         git commit -m "启动${{matrix.target}}编译${{env.TARGET_PROFILE}}固件"
         git push --force "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
