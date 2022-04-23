@@ -60,14 +60,15 @@ jobs:
         if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/repogx/.github/workflows/build-openwrt.yml" 2>/dev/null)" ]]; then
           git rm -rf ${GITHUB_WORKSPACE}/repogx/.github/workflows/build-openwrt.yml
         fi
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/build-openwrt.yml ${GITHUB_WORKSPACE}/repogx.github/workflows/build-openwrt.yml
         if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/repogx/.github/workflows/compile.yml" 2>/dev/null)" ]]; then
           git rm -rf ${GITHUB_WORKSPACE}/repogx/.github/workflows/compile.yml
         fi
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/compile.yml ${GITHUB_WORKSPACE}/repogx.github/workflows/compile.yml
         if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/repogx/.github/workflows/synchronization.yml" 2>/dev/null)" ]]; then
           git rm -rf ${GITHUB_WORKSPACE}/repogx/.github/workflows/synchronization.yml
         fi
-        
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* "${GITHUB_WORKSPACE}/repogx/.github/workflows"
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/synchronization.yml ${GITHUB_WORKSPACE}/repogx.github/workflows/synchronization.yml
         rm -rf ${GITHUB_WORKSPACE}/shangyou
         cd repogx
         git add .
