@@ -48,8 +48,9 @@ jobs:
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         cp -Rf "./.github" "${GITHUB_WORKSPACE}/openwrt"
         git clone -b main https://github.com/281677160/build-actions.git shangyou
-        cp -Rf "${GITHUB_WORKSPACE}/shangyou/{README.md,LICENSE}" "${GITHUB_WORKSPACE}/openwrt"
-        rm -rf shangyou/build/*/.config
+        cp -Rf "${GITHUB_WORKSPACE}/shangyou/LICENSE" "${GITHUB_WORKSPACE}/openwrt/LICENSE"
+        cp -Rf "${GITHUB_WORKSPACE}/shangyou/README.md" "${GITHUB_WORKSPACE}/openwrt/README.md"
+        rm -rf ${GITHUB_WORKSPACE}/shangyou/build/*/.config
         for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
         for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "settings.ini" |sed 's/\/settings.ini//g'); do mv "${X}"/settings.ini "${X}"/settings.ini.bak; done
         for X in $(grep "\"LEDE\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lede_source/* "${X}"; done
