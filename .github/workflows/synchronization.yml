@@ -46,7 +46,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         mkdir -p repogx
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './repogx' ! -path './'` repogx
-        cp -Rf .github repogx
+        cp -Rf .github repogx/.github
         git clone -b main https://github.com/281677160/build-actions.git shangyou
         
         
