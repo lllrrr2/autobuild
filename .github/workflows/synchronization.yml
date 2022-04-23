@@ -43,31 +43,18 @@ jobs:
     - name: 整理数据
       run: |
         cd $GITHUB_WORKSPACE
-        mkdir -p ${GITHUB_WORKSPACE}/openwrt
-        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        cp -Rf "./.github" "${GITHUB_WORKSPACE}/openwrt"
         git clone -b main https://github.com/281677160/build-actions.git shangyou
-        cp -Rf "${GITHUB_WORKSPACE}/shangyou/LICENSE" "${GITHUB_WORKSPACE}/openwrt/LICENSE"
-        cp -Rf "${GITHUB_WORKSPACE}/shangyou/README.md" "${GITHUB_WORKSPACE}/openwrt/README.md"
+        cp -Rf "${GITHUB_WORKSPACE}/shangyou/LICENSE" "${GITHUB_WORKSPACE}/LICENSE"
+        cp -Rf "${GITHUB_WORKSPACE}/shangyou/README.md" "${GITHUB_WORKSPACE}/README.md"
         rm -rf ${GITHUB_WORKSPACE}/shangyou/build/*/.config
-        for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
-        for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "settings.ini" |sed 's/\/settings.ini//g'); do mv "${X}"/settings.ini "${X}"/settings.ini.bak; done
-        for X in $(grep "\"LEDE\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lede_source/* "${X}"; done
-        for X in $(grep "\"LIENOL\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lienol_source/* "${X}"; done
-        for X in $(grep "\"IMMORTAL\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Mortal_source/* "${X}"; done
-        for X in $(grep "\"TIANLING\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Tianling_source/* "${X}"; done
-        cp -Rf $GITHUB_WORKSPACE/shangyou/build/openwrt_amlogic/* ${GITHUB_WORKSPACE}/openwrt/build/openwrt_amlogic/
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* "${GITHUB_WORKSPACE}/openwrt/.github/workflows"
-        cd ${GITHUB_WORKSPACE}/openwrt
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        
-    - name: 整理数据
-      run: |
+        for X in $(find ${GITHUB_WORKSPACE}/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
+        for X in $(find ${GITHUB_WORKSPACE}/build -name "settings.ini" |sed 's/\/settings.ini//g'); do mv "${X}"/settings.ini "${X}"/settings.ini.bak; done
+        for X in $(grep "\"LEDE\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lede_source/* "${X}"; done
+        for X in $(grep "\"LIENOL\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lienol_source/* "${X}"; done
+        for X in $(grep "\"IMMORTAL\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Mortal_source/* "${X}"; done
+        for X in $(grep "\"TIANLING\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Tianling_source/* "${X}"; done
+        cp -Rf $GITHUB_WORKSPACE/shangyou/build/openwrt_amlogic/* ${GITHUB_WORKSPACE}/build/openwrt_amlogic/
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* "${GITHUB_WORKSPACE}/.github/workflows"
         git add .
         git commit -m "同步上游281677160/build-actions于$(date +%Y年%m月%d号%H时%M分%S秒)"
         git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
