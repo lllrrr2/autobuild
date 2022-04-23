@@ -44,16 +44,17 @@ jobs:
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
+        mkdir -p ${GITHUB_WORKSPACE}/openwrt
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         git clone -b main https://github.com/281677160/build-actions.git shangyou
-        rm -rf ${GITHUB_WORKSPACE}/shangyou/build/*/.config
+        rm -rf shangyou/build/*/.config
         for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
         for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "settings.ini" |sed 's/\/settings.ini//g'); do mv "${X}"/settings.ini "${X}"/settings.ini.bak; done
         for X in $(grep "\"LEDE\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lede_source/* "${X}"; done
         for X in $(grep "\"LIENOL\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lienol_source/* "${X}"; done
         for X in $(grep "\"IMMORTAL\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Mortal_source/* "${X}"; done
         for X in $(grep "\"TIANLING\"" -rl "${GITHUB_WORKSPACE}/openwrt/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Tianling_source/* "${X}"; done
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/* openwrt/.github
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/* ${GITHUB_WORKSPACE}/openwrt/.github
         
         cd openwrt
         git add .
