@@ -67,6 +67,7 @@ jobs:
         fi
         
         cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* "${GITHUB_WORKSPACE}/.github/workflows"
+        rm -rf ${GITHUB_WORKSPACE}/shangyou
         git add .
         git commit -m "同步上游281677160/build-actions于$(date +%Y年%m月%d号%H时%M分%S秒)"
         git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
