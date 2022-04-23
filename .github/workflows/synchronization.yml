@@ -45,8 +45,9 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         mkdir -p ${GITHUB_WORKSPACE}/openwrt
-        cp -Rf * "${GITHUB_WORKSPACE}/openwrt"
-        cp -Rf ".github" "${GITHUB_WORKSPACE}/openwrt"
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
+        cp -Rf "./{README.md,LICENSE}" "${GITHUB_WORKSPACE}/openwrt"
+        cp -Rf "./.github" "${GITHUB_WORKSPACE}/openwrt"
         git clone -b main https://github.com/281677160/build-actions.git shangyou
         rm -rf shangyou/build/*/.config
         for X in $(find ${GITHUB_WORKSPACE}/openwrt/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
