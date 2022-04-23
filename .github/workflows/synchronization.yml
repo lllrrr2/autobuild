@@ -44,30 +44,32 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         git clone -b main https://github.com/281677160/build-actions.git shangyou
-        cp -Rf "${GITHUB_WORKSPACE}/shangyou/LICENSE" "${GITHUB_WORKSPACE}/LICENSE"
-        cp -Rf "${GITHUB_WORKSPACE}/shangyou/README.md" "${GITHUB_WORKSPACE}/README.md"
+        git clone -b main https://github.com/${{github.repository}}.git repogx
+        cp -Rf "${GITHUB_WORKSPACE}/shangyou/LICENSE" "${GITHUB_WORKSPACE}/repogx/LICENSE"
+        cp -Rf "${GITHUB_WORKSPACE}/shangyou/README.md" "${GITHUB_WORKSPACE}/repogx/README.md"
         rm -rf ${GITHUB_WORKSPACE}/shangyou/build/*/.config
-        for X in $(find ${GITHUB_WORKSPACE}/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
-        for X in $(find ${GITHUB_WORKSPACE}/build -name "settings.ini" |sed 's/\/settings.ini//g'); do mv "${X}"/settings.ini "${X}"/settings.ini.bak; done
-        for X in $(grep "\"LEDE\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lede_source/* "${X}"; done
-        for X in $(grep "\"LIENOL\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lienol_source/* "${X}"; done
-        for X in $(grep "\"IMMORTAL\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Mortal_source/* "${X}"; done
-        for X in $(grep "\"TIANLING\"" -rl "${GITHUB_WORKSPACE}/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Tianling_source/* "${X}"; done
-        cp -Rf $GITHUB_WORKSPACE/shangyou/build/openwrt_amlogic/* ${GITHUB_WORKSPACE}/build/openwrt_amlogic/
+        for X in $(find ${GITHUB_WORKSPACE}/repogx/build -name "diy-part.sh" |sed 's/\/diy-part.sh//g'); do mv "${X}"/diy-part.sh "${X}"/diy-part.sh.bak; done
+        for X in $(find ${GITHUB_WORKSPACE}/repogx/build -name "settings.ini" |sed 's/\/settings.ini//g'); do mv "${X}"/settings.ini "${X}"/settings.ini.bak; done
+        for X in $(grep "\"LEDE\"" -rl "${GITHUB_WORKSPACE}/repogx/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lede_source/* "${X}"; done
+        for X in $(grep "\"LIENOL\"" -rl "${GITHUB_WORKSPACE}/repogx/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Lienol_source/* "${X}"; done
+        for X in $(grep "\"IMMORTAL\"" -rl "${GITHUB_WORKSPACE}/repogx/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Mortal_source/* "${X}"; done
+        for X in $(grep "\"TIANLING\"" -rl "${GITHUB_WORKSPACE}/repogx/build" |grep "settings.ini" |sed 's/\/settings.*//g' |uniq); do cp -Rf shangyou/build/Tianling_source/* "${X}"; done
+        cp -Rf $GITHUB_WORKSPACE/shangyou/build/openwrt_amlogic/* ${GITHUB_WORKSPACE}/repogx/build/openwrt_amlogic/
         
         
-        if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/.github/workflows/build-openwrt.yml" 2>/dev/null)" ]]; then
-          git rm -rf ${GITHUB_WORKSPACE}/.github/workflows/build-openwrt.yml
+        if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/repogx/.github/workflows/build-openwrt.yml" 2>/dev/null)" ]]; then
+          git rm -rf ${GITHUB_WORKSPACE}/repogx/.github/workflows/build-openwrt.yml
         fi
-        if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/.github/workflows/compile.yml" 2>/dev/null)" ]]; then
-          git rm -rf ${GITHUB_WORKSPACE}/.github/workflows/compile.yml
+        if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/repogx/.github/workflows/compile.yml" 2>/dev/null)" ]]; then
+          git rm -rf ${GITHUB_WORKSPACE}/repogx/.github/workflows/compile.yml
         fi
-        if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/.github/workflows/synchronization.yml" 2>/dev/null)" ]]; then
-          git rm -rf ${GITHUB_WORKSPACE}/.github/workflows/synchronization.yml
+        if [[ -n "$(ls -A "${GITHUB_WORKSPACE}/repogx/.github/workflows/synchronization.yml" 2>/dev/null)" ]]; then
+          git rm -rf ${GITHUB_WORKSPACE}/repogx/.github/workflows/synchronization.yml
         fi
         
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* "${GITHUB_WORKSPACE}/.github/workflows"
+        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* "${GITHUB_WORKSPACE}/repogx/.github/workflows"
         rm -rf ${GITHUB_WORKSPACE}/shangyou
+        cd repogx
         git add .
         git commit -m "同步上游281677160/build-actions于$(date +%Y年%m月%d号%H时%M分%S秒)"
         git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
