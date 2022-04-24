@@ -45,7 +45,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         git clone https://github.com/281677160/build-actions shangyou
-        git clone https://github.com/281677160/build-actions repogx
+        git clone https://github.com/${{github.repository}} repogx
         
     - name: 同步上游仓库
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
