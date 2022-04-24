@@ -93,20 +93,6 @@ jobs:
             sed -i "s/${{env.QIDONG1}}/${{env.QIDONG2}}/g" shangyou/.github/workflows/compile.yml
           fi
         fi
-        cp -Rf $GITHUB_WORKSPACE/shangyou/README.md $GITHUB_WORKSPACE/repogx/README.md
-        cd repogx
-        if [[ -n "$(ls -A "$GITHUB_WORKSPACE/repogx/.github/workflows/compile.yml" 2>/dev/null)" ]]; then
-          git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/compile.yml
-        fi
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/compile.yml .github/workflows/compile.yml
-        if [[ -n "$(ls -A "$GITHUB_WORKSPACE/repogx/.github/workflows/build-openwrt.yml" 2>/dev/null)" ]]; then
-          git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/build-openwrt.yml
-        fi
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/build-openwrt.yml .github/workflows/build-openwrt.yml
-        if [[ -n "$(ls -A "$GITHUB_WORKSPACE/repogx/.github/workflows/synchronization.yml" 2>/dev/null)" ]]; then
-          git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/synchronization.yml
-        fi
-        cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/synchronization.yml .github/workflows/synchronization.yml
 
         cp -Rf $GITHUB_WORKSPACE/shangyou/* ./
         cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* .github/workflows
