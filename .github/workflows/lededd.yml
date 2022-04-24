@@ -44,17 +44,15 @@ jobs:
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
+        git clone https://github.com/281677160/build-actions shangyou
         git clone https://github.com/281677160/build-actions repogx
         
     - name: 同步上游仓库
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
-        rm -fr repogx/build/Lienol_source
-        rm -fr repogx/build/Mortal_source
-        rm -fr repogx/build/Tianling_source
-        rm -fr repogx/build/openwrt_amlogic
-        
+        rm -fr repogx/build/*
+        cp -Rf $GITHUB_WORKSPACE/shangyou/build/Lede_source repogx/build/Lede_source
         
         chmod -R 775 repogx
         cd repogx
