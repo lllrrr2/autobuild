@@ -57,16 +57,13 @@ EOF
 
 
 # 修改插件名字
-for X in $(grep 'aMule设置' -rl ./ |grep ".*po"); do sed -i "s?"aMule设置"?"电驴下载"?g" "${X}"; done
-for X in $(grep '网络存储' -rl ./ |grep ".*po"); do sed -i "s?"网络存储"?"存储"?g" "${X}"; done
-for X in $(grep 'NAS' -rl ./ |grep ".*po"); do sed -i "s?"NAS"?"存储"?g" "${X}"; done
-for X in $(grep 'Turbo ACC 网络加速' -rl ./ |grep ".*po"); do sed -i "s?"Turbo ACC 网络加速"?"网络加速"?g" "${X}"; done
-for X in $(grep 'KMS 服务器' -rl ./ |grep ".*po"); do sed -i "s?"KMS 服务器"?"KMS激活"?g" "${X}"; done
-for X in $(grep 'TTYD 终端' -rl ./ |grep ".*po"); do sed -i "s?"TTYD 终端"?"命令窗"?g" "${X}"; done
-for X in $(grep 'USB 打印服务器' -rl ./ |grep ".*po"); do sed -i "s?"USB 打印服务器"?"打印服务"?g" "${X}"; done
-for X in $(grep 'Web 管理' -rl ./ |grep ".*po"); do sed -i "s?"Web 管理"?"Web管理"?g" "${X}"; done
-for X in $(grep '管理权' -rl ./ |grep ".*po"); do sed -i "s?"管理权"?"改密码"?g" "${X}"; done
-
+sed -i 's/"aMule设置"/"电驴下载"/g' `egrep "aMule设置" -rl ./`
+sed -i 's/"网络存储"/"NAS"/g' `egrep "网络存储" -rl ./`
+sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' `egrep "Turbo ACC 网络加速" -rl ./`
+sed -i 's/"KMS 服务器"/"KMS激活"/g' `egrep "KMS 服务器" -rl ./`
+sed -i 's/"USB 打印服务器"/"打印服务"/g' `egrep "USB 打印服务器" -rl ./`
+sed -i 's/"Web 管理"/"Web管理"/g' `egrep "Web 管理" -rl ./`
+sed -i 's/"管理权"/"改密码"/g' `egrep "管理权" -rl ./`
 
 
 # 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间（根据编译机型变化,自行调整删除的固件名称）
