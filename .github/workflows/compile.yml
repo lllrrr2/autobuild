@@ -71,16 +71,15 @@ jobs:
         
     - name: 下载"${{matrix.target}}"源码
       run: |
-        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_update
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Pac_amlogic
         
     - name: Build OpenWrt firmware
-      if: steps.compile.outputs.status == 'success' && !cancelled()
       uses: ophub/amlogic-s9xxx-openwrt@main
       with:
-        openwrt_path: ${{ env.openwrt_path }}
-        openwrt_soc: ${{ env.openwrt_soc }}
-        openwrt_kernel: ${{ env.openwrt_kernel }}
-        openwrt_size: ${{ env.openwrt_size  }}
+        openwrt_path: ${{ env.amlogic_path }}
+        openwrt_soc: ${{ env.amlogic_soc }}
+        openwrt_kernel: ${{ env.amlogic_kernel }}
+        openwrt_size: ${{ env.amlogic_size  }}
     
     - name: 公 告
       run: |
