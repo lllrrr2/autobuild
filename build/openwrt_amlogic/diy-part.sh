@@ -60,7 +60,7 @@ sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 # 当前可用机型 a311d, s922x, s905x3, s905x2, s905l3a, s912, s905d, s905x, s905w, s905
 
 cat >"${amlogic_sh_path}" <<-EOF
-amlogic_soc="all"
+amlogic_soc="s905d"
 amlogic_kernel="5.15.25"
 amlogic_size="1024"
 EOF
