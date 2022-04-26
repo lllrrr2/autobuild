@@ -59,7 +59,7 @@ sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 # 设置打包固件的机型，内核组合（可用内核是时时变化的,过老的内核就删除的，所以要选择什么内核请看说明）
 # 当前可用机型 s922x s922x-n2 s922x-reva a311d s905x3 s905x2 s905x2-km3 s905l3a s912 s912-m8s s905d s905d-ki s905x s905w s905
 
-cat >$GITHUB_WORKSPACE/amlogic_openwrt <<-EOF
+cat >"$AMLOGIC_SH_PATH" <<-EOF
 amlogic_model=s912-m8s
 amlogic_kernel=5.15.25_5.10.100 -a true
 EOF
