@@ -68,6 +68,19 @@ jobs:
       run: |
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         ln -sf /${{matrix.target}}/openwrt $GITHUB_WORKSPACE/openwrt
+        
+    - name: 下载"${{matrix.target}}"源码
+      run: |
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_update
+        
+    - name: Build OpenWrt firmware
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      uses: ophub/amlogic-s9xxx-openwrt@main
+      with:
+        openwrt_path: ${{ env.openwrt_path }}
+        openwrt_soc: ${{ env.openwrt_soc }}
+        openwrt_kernel: ${{ env.openwrt_kernel }}
+        openwrt_size: ${{ env.openwrt_size  }}
     
     - name: 公 告
       run: |
