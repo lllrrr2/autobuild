@@ -62,7 +62,6 @@ sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 cat >$GITHUB_WORKSPACE/amlogic_openwrt <<-EOF
 amlogic_model=s912-m8s
 amlogic_kernel=5.15.25_5.10.100 -a true
-rootfs_size=960
 EOF
 
 
