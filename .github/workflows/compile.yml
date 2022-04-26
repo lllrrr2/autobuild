@@ -79,23 +79,6 @@ jobs:
       run: |
         cd openwrt
         source $BUILD_PATH/common.sh && Diy_menu
-        
-    - name: 下载"${{matrix.target}}"源码
-      run: |
-        cd $GITHUB_WORKSPACE
-        echo "TARGET_BSGET=$HOME_PATH/bin/targets/armvirt/64" >> $GITHUB_ENV
-        mkdir -p openwrt/bin/targets/armvirt/64
-        wget -P openwrt/bin/targets/armvirt/64 https://github.com/ophub/amlogic-s9xxx-openwrt/releases/download/openwrt_s9xxx_lede_2022.04.25.1109/openwrt-armvirt-64-default-rootfs.tar.gz -O openwrt/bin/targets/armvirt/64/openwrt-armvirt-64-default-rootfs.tar.gz
-        
-    - name: 下载"${{matrix.target}}"源码
-      run: |
-        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Package_amlogic
-
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@master
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
       if: env.USE_CACHEWRTBUILD == 'true'
@@ -124,6 +107,17 @@ jobs:
         cd openwrt
         source $BUILD_PATH/upgrade.sh && GET_TARGET_INFO
         source $BUILD_PATH/common.sh && Diy_xinxi
+        
+    - name: 下载"${{matrix.target}}"源码
+      run: |
+        cd $GITHUB_WORKSPACE
+        echo "TARGET_BSGET=$HOME_PATH/bin/targets/armvirt/64" >> $GITHUB_ENV
+        mkdir -p openwrt/bin/targets/armvirt/64
+        wget -P openwrt/bin/targets/armvirt/64 https://github.com/ophub/amlogic-s9xxx-openwrt/releases/download/openwrt_s9xxx_lede_2022.04.25.1109/openwrt-armvirt-64-default-rootfs.tar.gz -O openwrt/bin/targets/armvirt/64/openwrt-armvirt-64-default-rootfs.tar.gz
+        
+    - name: 下载"${{matrix.target}}"源码
+      run: |
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Package_amlogic
         
     - name: 下载软件包
       id: package
