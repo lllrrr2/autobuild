@@ -80,6 +80,12 @@ jobs:
         openwrt_soc: ${{ env.amlogic_soc }}
         openwrt_kernel: ${{ env.amlogic_kernel }}
         openwrt_size: ${{ env.amlogic_size  }}
+        
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@master
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     
     - name: 公 告
       run: |
