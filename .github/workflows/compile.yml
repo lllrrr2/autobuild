@@ -111,13 +111,16 @@ jobs:
     - name: 下载"${{matrix.target}}"源码
       run: |
         cd $GITHUB_WORKSPACE
-        echo "TARGET_BSGET=$HOME_PATH/bin/targets/armvirt/64" >> $GITHUB_ENV
         mkdir -p openwrt/bin/targets/armvirt/64
         wget -P openwrt/bin/targets/armvirt/64 https://github.com/ophub/amlogic-s9xxx-openwrt/releases/download/openwrt_s9xxx_lede_2022.04.25.1109/openwrt-armvirt-64-default-rootfs.tar.gz -O openwrt/bin/targets/armvirt/64/openwrt-armvirt-64-default-rootfs.tar.gz
         
     - name: 下载"${{matrix.target}}"源码
       run: |
-        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Package_amlogic
+        source $BUILD_PATH/common.sh && Package_amlogic
+        
+    - name: 下载"${{matrix.target}}"源码
+      run: |
+        source $BUILD_PATH/common.sh && Package_Clear
         
     - name: 下载软件包
       id: package
