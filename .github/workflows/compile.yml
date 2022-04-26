@@ -82,15 +82,13 @@ jobs:
         
     - name: 下载"${{matrix.target}}"源码
       run: |
-        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Pac_amlogic
+        cd $GITHUB_WORKSPACE
+        mkdir -p openwrt/bin/targets/armvirt/64
+        wget -P openwrt/bin/targets/armvirt/64 https://github.com/ophub/amlogic-s9xxx-openwrt/releases/download/openwrt_s9xxx_lede_2022.04.25.1109/openwrt-armvirt-64-default-rootfs.tar.gz -O openwrt/bin/targets/armvirt/64/openwrt-armvirt-64-default-rootfs.tar.gz
         
-    - name: Build OpenWrt firmware
-      uses: ophub/amlogic-s9xxx-openwrt@main
-      with:
-        openwrt_path: ${{ env.amlogic_path }}
-        openwrt_soc: ${{ env.amlogic_soc }}
-        openwrt_kernel: ${{ env.amlogic_kernel }}
-        openwrt_size: ${{ env.amlogic_size  }}
+    - name: 下载"${{matrix.target}}"源码
+      run: |
+        source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Package_amlogic
 
     - name: SSH远程连接（制作.config配置文件）
       uses: danshui-git/debugger-action@master
