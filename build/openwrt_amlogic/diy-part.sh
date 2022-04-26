@@ -61,7 +61,7 @@ sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 
 cat >"$HOME_PATH/amlogic_openwrt" <<-EOF
 amlogic_soc="all"
-amlogic_kernel="5.15.25_5.10.100"
+amlogic_kernel="5.15.25"
 amlogic_size="1024"
 EOF
 
