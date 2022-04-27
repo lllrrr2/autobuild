@@ -36,7 +36,7 @@ EOF
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 
-# 编译多主题时,设置某主题成默认主题（你要确定您这里改的主题的名字准确,比如下面代码的[argon]和肯定编译了该主题,要不然进不了后台）
+# 编译多主题时,设置某主题成默认主题（您要确定您这里改的主题的名字准确,比如下面代码的[argon]和肯定编译了该主题,要不然进不了后台）
 #sed -i "/exit 0/i\uci set luci.main.mediaurlbase='/luci-static/argon' && uci commit luci" "$FIN_PATH"
 
 
@@ -48,20 +48,21 @@ sed -i "s/OpenWrt /${Author} compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' "$ZZZ_PATH"
 
 
+# 删除默认防火墙
+sed -i '/to-ports 53/d' "$ZZZ_PATH"
+
+
 # 取消路由器每天跑分任务
 sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 
 
-# x86机型,默认内核4.19，修改内核为4.14（根据源码变化,自行在源码target/linux/x86/Makefile文件查看）
-#sed -i 's/PATCHVER:=4.19/PATCHVER:=4.14/g' target/linux/x86/Makefile
+# 设置打包固件的机型，内核组合（可用内核是时时变化的,过老的内核就删除的，所以要选择什么内核请看说明）
+# 当前可用机型 s922x s922x-n2 s922x-reva a311d s905x3 s905x2 s905x2-km3 s905l3a s912 s912-m8s s905d s905d-ki s905x s905w s905
 
-
-# K3专用，编译K3的时候只会出K3固件（其他机型也适宜,把phicomm-k3和对应的路径替换一下，名字要绝对正确才行）
-#sed -i 's|^TARGET_|# TARGET_|g; s|# TARGET_DEVICES += phicomm-k3|TARGET_DEVICES += phicomm-k3|' target/linux/bcm53xx/image/Makefile
-
-
-# 在线更新时，删除不想保留固件的某个文件，在EOF跟EOF之间加入删除代码，记住这里对应的是固件的文件路径，比如： rm -rf /etc/config/luci
-cat >$DELETE <<-EOF
+cat >"$AMLOGIC_SH_PATH" <<-EOF
+amlogic_model=s912-m8s
+amlogic_kernel=5.15.25_5.10.100 -a true
+rootfs_size=960
 EOF
 
 
@@ -78,14 +79,8 @@ sed -i 's/"管理权"/"改密码"/g' `egrep "管理权" -rl ./`
 sed -i 's/"带宽监控"/"监控"/g' `egrep "带宽监控" -rl ./`
 
 
-# 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间（根据机型变化,自行调整需要删除的固件名称）
+# 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间
 cat >"$CLEAR_PATH" <<-EOF
-packages
-config.buildinfo
-feeds.buildinfo
-openwrt-x86-64-generic-kernel.bin
-openwrt-x86-64-generic.manifest
-openwrt-x86-64-generic-squashfs-rootfs.img.gz
-sha256sums
-version.buildinfo
+openwrt-armvirt-64-default-rootfs.tar.gz
+18.06-Lede-x86-64-202204231107-legacy-530cc0.img.gz
 EOF
