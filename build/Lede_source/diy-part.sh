@@ -83,7 +83,7 @@ sed -i 's/"带宽监控"/"监控"/g' `egrep "带宽监控" -rl ./`
 
 
 # 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间（根据编译机型变化,自行调整需要删除的固件名称）
-cat >"$CLEAR_PAT" <<-EOF
+cat >"CLEAR_PAT" <<-EOF
 openwrt-armvirt-64-default-rootfs.tar.gz
 18.06-Lede-x86-64-202204231107-legacy-530cc0.img.gz
 EOF
