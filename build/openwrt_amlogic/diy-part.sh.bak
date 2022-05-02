@@ -60,7 +60,7 @@ sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 # 当前可用机型 s922x s922x-n2 s922x-reva a311d s905x3 s905x2 s905x2-km3 s905l3a s912 s912-m8s s905d s905d-ki s905x s905w s905
 
 cat >"$AMLOGIC_SH_PATH" <<-EOF
-amlogic_model=s912-m8s
+amlogic_model=s905x3_s905x2_s905x_s905w_s905d_s922x_s912
 amlogic_kernel=5.15.25_5.10.100 -a true
 rootfs_size=960
 EOF
@@ -81,6 +81,9 @@ sed -i 's/"带宽监控"/"监控"/g' `egrep "带宽监控" -rl ./`
 
 # 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间
 cat >"$CLEAR_PATH" <<-EOF
-openwrt-armvirt-64-default-rootfs.tar.gz
-18.06-Lede-x86-64-202204231107-legacy-530cc0.img.gz
+packages
+config.buildinfo
+feeds.buildinfo
+sha256sums
+version.buildinfo
 EOF
