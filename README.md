@@ -1,6 +1,6 @@
 
 <details>
-- <summary>✖️ 编译配置说明</summary>
+<summary>编译配置说明</summary>
   
 2022年4月27号修改
   
