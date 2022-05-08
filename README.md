@@ -13,11 +13,17 @@
 
 
 ---
+<details>
+<summary>编译配置说明</summary>
+<br />
+
 - ## [`github编译教程`](https://github.com/danshui-git/shuoming#readme)
 
 ---
 - #### [`本地Ubuntu一键编译`](https://github.com/281677160/bendi)
 - #### [`本地一键提取.config然后在云编译脚本使用`](https://github.com/danshui-git/shuoming/blob/master/yijianconfig.md)
+
+</details>
 ---
 - # 鸣谢
 - 感谢以下各位大佬（排名无分先后）
