@@ -1,6 +1,6 @@
 
 <details>
-<summary>编译配置说明</summary>
+<summary>点击查看更新说明</summary>
 <br />
   
 2022年4月27号修改
@@ -14,7 +14,7 @@
 
 ---
 <details>
-<summary>编译配置说明</summary>
+<summary>点击查看编译说明</summary>
 <br />
 
 - ## [`github编译教程`](https://github.com/danshui-git/shuoming#readme)
