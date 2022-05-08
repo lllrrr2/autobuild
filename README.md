@@ -1,6 +1,6 @@
 
 <details>
-<summary>✖️ 编译配置说明</summary>
+- <summary>✖️ 编译配置说明</summary>
 - 2022年4月27号修改
 - 把 build/openwrt_amlogic/diy-part.sh 里面的晶晨打包组合的路径修改过了，请及时更新
 
