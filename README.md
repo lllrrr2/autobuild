@@ -1,6 +1,6 @@
 
 <details>
-<summary>点击查看🔝更新说明</summary>
+<summary>🆙点击查看更新说明</summary>
 <br />
   
 2022年4月27号修改
