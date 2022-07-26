@@ -63,7 +63,7 @@ sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$FIN_PATH"
 #sed -i 's|^TARGET_|# TARGET_|g; s|# TARGET_DEVICES += phicomm_k3|TARGET_DEVICES += phicomm_k3|' target/linux/bcm53xx/image/Makefile
 
 
-# 更改使用OpenClash的分支代码，把下面的master改成dve就改成dve分支，改master就是用master分支
+# 更改使用OpenClash的分支代码，把下面的master改成dev就改成dev分支，改master就是用master分支
 echo "OpenClash_branch" > master
 
 
