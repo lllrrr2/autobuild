@@ -33,14 +33,14 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     name: 编译 "${{matrix.target}}"
     strategy:
       fail-fast: false
       matrix:
-        target: [openwrt_amlogic]
+        target: [Lede_source,Lienol_source,Mortal_source,Tianling_source,openwrt_amlogic]
         
         # [Lede_source,Lienol_source,Mortal_source,Tianling_source,openwrt_amlogic]
 
