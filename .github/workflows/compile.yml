@@ -165,7 +165,7 @@ jobs:
     - name: 发布固件
       continue-on-error: true
       if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@main
       with:
         name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
@@ -177,13 +177,13 @@ jobs:
       id: regular
       continue-on-error: true
       if: steps.compile.outcome == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
-      uses: svenstaro/upload-release-action@v2
+      uses: ncipollo/release-action@main
       with:
-        repo_token: ${{ secrets.REPO_TOKEN }}
-        file: openwrt/bin/Firmware/*
+        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}
         tag: AutoUpdate
-        overwrite: true
-        file_glob: true
+        token: ${{ secrets.REPO_TOKEN }}
+        bodyFile: "update_log.txt"
+        artifacts: "openwrt/bin/Firmware/*"
         
     - name: 发送[在线更新固件]至云端2
       continue-on-error: true
@@ -196,13 +196,13 @@ jobs:
     - name: 发送[在线更新固件]至云端3
       continue-on-error: true
       if: steps.regular.outcome == 'success' && env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
-      uses: svenstaro/upload-release-action@v2
+      uses: ncipollo/release-action@main
       with:
-        repo_token: ${{ secrets.REPO_TOKEN }}
-        file: Github_Tags/*
+        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}
         tag: AutoUpdate
-        overwrite: true
-        file_glob: true
+        token: ${{ secrets.REPO_TOKEN }}
+        bodyFile: "update_log.txt"
+        artifacts: "Github_Tags/*"
 
     - name: 电报机器人或pushplus信息通知
       continue-on-error: true
