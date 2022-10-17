@@ -238,5 +238,6 @@ jobs:
         name: 在线升级
         tag: AutoUpdate
         token: ${{ secrets.REPO_TOKEN }}
+        allowUpdates: true
         bodyFile: "update_log.txt"
         artifacts: "Github_Tags/*"
