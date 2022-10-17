@@ -235,9 +235,10 @@ jobs:
       continue-on-error: true
       uses: ncipollo/release-action@main
       with:
-        name: 在线升级
+        name: AutoUpdate
         tag: AutoUpdate
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
+        removeArtifacts: true
         bodyFile: "update_log.txt"
         artifacts: "Github_Tags/*"
