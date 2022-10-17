@@ -77,7 +77,6 @@ jobs:
         source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_repo_url
         source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_settings
         
-        
     - name: 定时启动编译时清理Actions空间和删除releases数值设置
       run: |
          if [[ -z "${{ github.event.inputs.days }}" ]] && [[ -z "${{ github.event.inputs.rele }}" ]]; then
@@ -92,7 +91,9 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo -E apt-get -qq update -y
+        sudo -E apt-get -qq full-upgrade -y
+        sudo -E apt-get -qq install -y gawk git ccache gettext libssl-dev xsltproc zip git-core wget curl grep
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /${{matrix.target}}
         sudo chown $USER:$GROUPS /${{matrix.target}}
@@ -213,27 +214,3 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        
-    - name: 上传固件到「WeTransfer」
-      continue-on-error: true
-      run: |
-        echo "#### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
-        
-    - name: 发送[在线更新固件]至云端2
-      continue-on-error: true
-      run: |
-        mkdir -p Github_Tags
-        cd Github_Tags
-        wget -q --no-cookie --no-check-certificate https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O Github_Tags
-        
-    - name: 发送[在线更新固件]至云端3
-      continue-on-error: true
-      uses: ncipollo/release-action@main
-      with:
-        name: AutoUpdate
-        tag: AutoUpdate
-        token: ${{ secrets.REPO_TOKEN }}
-        allowUpdates: true
-        replacesArtifacts: true
-        bodyFile: AutoUpdate_log.txt
-        artifacts: "Github_Tags/*"
