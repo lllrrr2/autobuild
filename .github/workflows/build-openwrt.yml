@@ -220,7 +220,7 @@ jobs:
     - name: 上传固件到「WeTransfer」
       continue-on-error: true
       run: |
-        echo "### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
+        echo "##### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
         
     - name: 发送[在线更新固件]至云端2
       continue-on-error: true
