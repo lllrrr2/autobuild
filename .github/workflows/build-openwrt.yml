@@ -231,12 +231,12 @@ jobs:
         cd Github_Tags
         wget -q --no-cookie --no-check-certificate https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O Github_Tags
         
-    - name: 发送[在线更新固件]至云端3
-      continue-on-error: true
-      uses: svenstaro/upload-release-action@v2
+    - name: Upload OpenWrt Firmware to Release
+      uses: ncipollo/release-action@main
       with:
-        repo_token: ${{ secrets.REPO_TOKEN }}
-        file: Github_Tags/*
-        tag: AutoUpdate
-        overwrite: true
-        file_glob: true
+        tag: AutoUpdate12
+        artifacts: Github_Tags/*
+        allowUpdates: true
+        token: ${{ secrets.REPO_TOKEN }}
+        body: |
+            This is OpenWrt firmware for Amlogic s9xxx tv box
