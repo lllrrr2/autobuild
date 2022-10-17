@@ -76,8 +76,6 @@ jobs:
         chmod -R +x ${GITHUB_WORKSPACE}/build
         source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_repo_url
         source $GITHUB_WORKSPACE/build/${{matrix.target}}/common.sh && Diy_settings
-        curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-        sudo apt-get install -y nodejs
         
         
     - name: 定时启动编译时清理Actions空间和删除releases数值设置
@@ -97,6 +95,8 @@ jobs:
         sudo -E apt-get -qq update -y
         sudo -E apt-get -qq full-upgrade -y
         sudo -E apt-get -qq install -y gawk git ccache gettext libssl-dev xsltproc zip git-core wget curl grep
+        curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+        sudo apt-get install -y nodejs
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /${{matrix.target}}
         sudo chown $USER:$GROUPS /${{matrix.target}}
