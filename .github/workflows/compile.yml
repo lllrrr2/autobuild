@@ -178,7 +178,7 @@ jobs:
         tag: AutoUpdate
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
-        bodyFile: "update_log.txt"
+        bodyFile: "AutoUpdate_log.txt"
         artifacts: "openwrt/bin/Firmware/*"
         
     - name: 发送[在线更新固件]至云端2
@@ -198,7 +198,7 @@ jobs:
         tag: AutoUpdate
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
-        bodyFile: "update_log.txt"
+        bodyFile: "AutoUpdate_log.txt"
         artifacts: "Github_Tags/*"
 
     - name: 电报机器人或pushplus信息通知
