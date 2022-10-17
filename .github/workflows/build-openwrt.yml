@@ -216,9 +216,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         
     - name: 发送[在线更新固件]至云端3
-      continue-on-error: true
-      if: env.REPO_TOKEN
         wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
+      continue-on-error: true
+      if: env.REPO_TOKEN1
       uses: ncipollo/release-action@main
       with:
         name: AutoUpdate
