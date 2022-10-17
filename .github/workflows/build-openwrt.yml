@@ -92,10 +92,10 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -
         sudo -E apt-get -qq update -y
         sudo -E apt-get -qq full-upgrade -y
         sudo -E apt-get -qq install -y gawk git ccache gettext libssl-dev xsltproc zip git-core wget curl grep
-        curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
         sudo apt-get install -y nodejs
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /${{matrix.target}}
