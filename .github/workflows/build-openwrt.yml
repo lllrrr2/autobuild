@@ -238,5 +238,5 @@ jobs:
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
         replacesArtifacts: true
-        body: 552211552211
+        bodyFile: AutoUpdate_log.txt
         artifacts: "Github_Tags/*"
