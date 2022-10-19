@@ -203,5 +203,4 @@ jobs:
         tag: AutoUpdate
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
-        bodyFile: "AutoUpdate_log.txt"
         artifacts: "Github_Tags/*"
