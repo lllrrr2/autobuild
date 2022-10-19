@@ -53,7 +53,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+    if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
 
     name: 启动${{matrix.target}}编译
     strategy:
@@ -214,15 +214,3 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        
-    - name: 发送[在线更新固件]至云端3
-        wget https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O API
-      continue-on-error: true
-      if: env.REPO_TOKEN1
-      uses: ncipollo/release-action@main
-      with:
-        name: AutoUpdate
-        tag: AutoUpdate
-        token: ${{ secrets.REPO_TOKEN }}
-        allowUpdates: true
-        artifacts: "./API"
