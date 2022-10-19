@@ -112,14 +112,6 @@ jobs:
         source ${BUILD_PATH}/upgrade.sh && GET_TARGET_INFO
         source ${BUILD_PATH}/common.sh && Diy_xinxi
         
-    - name: 下载软件包
-      id: package
-      run: |
-        cd openwrt
-        make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
-        
     - name: 打包晶晨系列固件
       continue-on-error: true
       if: ${{ steps.compile.outcome }} == 'success' && ${{ env.AUTOMATIC_AMLOGIC }} == 'true'
