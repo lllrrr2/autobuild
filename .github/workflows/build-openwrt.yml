@@ -144,6 +144,13 @@ jobs:
       with:
         name: .config_${{ env.SOURCE }}_${{ env.TARGET_PROFILE }}_${{ env.Firmware_Date }}
         path: config.txt
+        
+    - name: 启用在线更新
+      continue-on-error: true
+      run: |
+        cd openwrt
+        source ${BUILD_PATH}/upgrade.sh && Diy_Part2
+        cat ${BASE_PATH}/bin/openwrt_info
     
     - name: 触发compile.yml启动"${{matrix.target}}"编译
       id: gitpush
