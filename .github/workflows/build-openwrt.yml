@@ -105,7 +105,7 @@ jobs:
       continue-on-error: true
       working-directory: /${{matrix.target}}
       run: |
-        git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
+        git clone -b "${REPO_BRANCH}" --single-branch "${REPO_URL}" openwrt
         ln -sf /${{matrix.target}}/openwrt ${GITHUB_WORKSPACE}/openwrt
  
     - name: 公 告
