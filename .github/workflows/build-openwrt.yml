@@ -139,7 +139,7 @@ jobs:
     - name: 上传.config配置文件在 github actions
       continue-on-error: true
       if: env.UPLOAD_CONFIG == 'true'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@main
       with:
         name: .config_${{ env.SOURCE }}_${{ env.TARGET_PROFILE }}_${{ env.Firmware_Date }}
         path: config.txt
@@ -193,29 +193,3 @@ jobs:
             exit 1
           fi
         fi
-        
-    - name: 发送[在线更新固件]至云端2
-      continue-on-error: true
-      run: |
-        mkdir -p Github_Tags
-        cd Github_Tags
-        wget -q --no-cookie --no-check-certificate https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O Github_Tags
-        
-    - name: 发送[在线更新固件]至云端3
-      continue-on-error: true
-      uses: ncipollo/release-action@main
-      with:
-        name: AutoUpdate
-        tag: AutoUpdate
-        token: ${{ secrets.REPO_TOKEN }}
-        allowUpdates: true
-        artifacts: "Github_Tags/*"
-        
-    - name: 上传固件到「WeTransfer」
-      continue-on-error: true
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "##### WETRANSFER：$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> update_log.txt
-        sed -i "s/Download Link/WETRANSFER/g" wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
