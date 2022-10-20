@@ -207,10 +207,9 @@ jobs:
     
     - name: 删除releases
       if: env.REPO_TOKEN
-      uses: dev-drprasad/delete-older-releases@v0.2.0
+      uses: freenet-actions/delete-old-releases@v1
       with:
-        repo: ${{ github.repository }}
-        keep_latest: ${{ env.keep_latest }}
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        regex: '^(?<group>.*)-\d$'  # Delete any and all releases. Capture part of the release name for the keep-latest-releases option.
+        max-age: 'P0W'              # Delete all releases older than one week.
+        keep-latest-releases: true   # Keep the latest release per group (e.g. develop-1, develop-2, etc.).
+        token: '${{ secrets.REPO_TOKEN }}'
