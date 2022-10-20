@@ -43,6 +43,7 @@ env:
   Warehouse: ${{github.repository}}
   Run_number: ${{github.run_number}}
   Run_workflow: ${{github.workflow}}
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   SCKEY: ${{ secrets.SCKEY }}
   PUSH_PLUS_TOKEN: ${{ secrets.PUSH_PLUS_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -143,18 +144,11 @@ jobs:
       with:
         name: .config_${{ env.SOURCE }}_${{ env.TARGET_PROFILE }}_${{ env.Firmware_Date }}
         path: config.txt
-        
-    - name: 启用在线更新
-      continue-on-error: true
-      run: |
-        cd openwrt
-        source ${BUILD_PATH}/upgrade.sh && Diy_Part2
-        cat ${BASE_PATH}/bin/openwrt_info
     
     - name: 触发compile.yml启动"${{matrix.target}}"编译
       id: gitpush
       continue-on-error: true
-      if: ${{ steps.clone.outcome }} == 'success' && ${{ steps.compile.outcome }} == 'success' && ${{ env.REPO_TOKEN }}
+      if: steps.clone.outcome == 'success' && steps.compile.outcome == 'success' && env.REPO_TOKEN
       run: |
         cd ${GITHUB_WORKSPACE}
         git clone -b main https://github.com/${{github.repository}}.git ${{matrix.target}}
@@ -177,7 +171,7 @@ jobs:
     - name: 电报机器人或pushplus信息通知
       if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TG'
       run: |
-        if [[ "${SERVERCHAN_SCKEY}" == "TG" ]]; then
+        if [[ "${{ env.SERVERCHAN_SCKEY }}" == "TG" ]]; then
           if [[ "${{steps.clone.outcome}}" == 'success' ]] && [[ "${{steps.gitpush.outcome}}" == 'success' ]] && [[ "${{steps.compile.outcome}}" == 'success' ]]; then
             curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{env.TARGET_PROFILE}}】固件中,请耐心等待...... 😋(${{env.Tongzhi_Date}})" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
           else
@@ -185,7 +179,7 @@ jobs:
             exit 1
           fi
         fi
-        if [[ "${SERVERCHAN_SCKEY}" == "PUSH" ]]; then
+        if [[ "${{ env.SERVERCHAN_SCKEY }}" == "PUSH" ]]; then
           if [[ "${{steps.clone.outcome}}" == 'success' ]] && [[ "${{steps.gitpush.outcome}}" == 'success' ]] && [[ "${{steps.compile.outcome}}" == 'success' ]]; then
             curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="开始编译【${{matrix.target}}】" --data "content=🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{env.TARGET_PROFILE}}】固件中,请耐心等待...... 😋(${{env.Tongzhi_Date}})" "http://www.pushplus.plus/send"
           else
@@ -193,3 +187,30 @@ jobs:
             exit 1
           fi
         fi
+        
+    - name: 编译信息
+      continue-on-error: true
+      if: env.BY_INFORMATION == 'true'
+      run: |
+        cd openwrt
+        source ${BUILD_PATH}/upgrade.sh && GET_TARGET_INFO
+        source ${BUILD_PATH}/common.sh && Diy_xinxi
+    
+    - name: 清理Actions空间
+      if: env.REPO_TOKEN
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: ${{ github.repository }}
+          keep_minimum_runs: 0
+          retain_days: ${{ env.retain_days }}
+    
+    - name: 删除releases
+      if: env.REPO_TOKEN
+      uses: dev-drprasad/delete-older-releases@master
+      with:
+        repo: ${{ github.repository }}
+        keep_latest: ${{ env.keep_latest }}
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
