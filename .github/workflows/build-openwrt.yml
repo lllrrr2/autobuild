@@ -195,21 +195,22 @@ jobs:
         cd openwrt
         source ${BUILD_PATH}/upgrade.sh && GET_TARGET_INFO
         source ${BUILD_PATH}/common.sh && Diy_xinxi
-          
+    
     - name: 清理Actions空间
       if: env.REPO_TOKEN
       uses: Mattraks/delete-workflow-runs@v2
       with:
-        token: ${{ secrets.REPO_TOKEN }}
-        repository: ${{ github.repository }}
-        retain_days: ${{ env.retain_days }}
-        keep_minimum_runs: 6
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: ${{ github.repository }}
+          keep_minimum_runs: 0
+          retain_days: ${{ env.retain_days }}
     
     - name: 删除releases
       if: env.REPO_TOKEN
-      uses: freenet-actions/delete-old-releases@v1
+      uses: dev-drprasad/delete-older-releases@v0.2.0
       with:
-        regex: '^(?<group>.*)-\d$'  # Delete any and all releases. Capture part of the release name for the keep-latest-releases option.
-        max-age: 'P0W'              # Delete all releases older than one week.
-        keep-latest-releases: true   # Keep the latest release per group (e.g. develop-1, develop-2, etc.).
-        token: '${{ secrets.REPO_TOKEN }}'
+        repo: ${{ github.repository }}
+        keep_latest: ${{ env.keep_latest }}
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
