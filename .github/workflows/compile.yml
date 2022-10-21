@@ -42,7 +42,7 @@ jobs:
       matrix:
         target: [Mortal_source]
         
-        # [Lede_source,Lienol_source,Mortal_source,Tianling_source,openwrt_amlogic]
+        # [Mortal_source,Tianling_source]
 
     steps:
     - name: 准备结束
