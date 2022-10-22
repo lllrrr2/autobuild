@@ -94,10 +94,7 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
           retain_days: ${{ env.retain_days }}
-          keep_minimum_runs: 1
-          delete_workflow_pattern: All
-          delete_workflow_by_state_pattern: All
-          delete_run_by_conclusion_pattern: All
+          keep_minimum_runs: 0.1
     
     - name: 部署编译环境
       env:
