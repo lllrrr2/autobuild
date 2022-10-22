@@ -87,15 +87,6 @@ jobs:
            echo "keep_latest=${{ github.event.inputs.rele }}" >> ${GITHUB_ENV}
          fi
         
-    - name: 清理Actions空间
-      if: env.REPO_TOKEN
-      uses: Mattraks/delete-workflow-runs@main
-      with:
-          token: ${{ secrets.REPO_TOKEN }}
-          repository: ${{ github.repository }}
-          retain_days: ${{ env.retain_days }}
-          keep_minimum_runs: 0
-    
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -204,6 +195,15 @@ jobs:
         cd openwrt
         source ${BUILD_PATH}/upgrade.sh && GET_TARGET_INFO
         source ${BUILD_PATH}/common.sh && Diy_xinxi
+    
+    - name: 清理Actions空间
+      if: env.REPO_TOKEN
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: ${{ env.retain_days }}
+          keep_minimum_runs: 0
     
     - name: 删除releases
       if: env.REPO_TOKEN
