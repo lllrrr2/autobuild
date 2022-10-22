@@ -89,7 +89,7 @@ jobs:
         
     - name: 清理Actions空间
       if: env.REPO_TOKEN
-      uses: ActionsRML/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@main
       with:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
