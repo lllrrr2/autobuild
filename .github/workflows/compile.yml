@@ -36,10 +36,8 @@ jobs:
     name: 编译 "${{matrix.target}}"
     runs-on: ubuntu-22.04
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
-    permissions:
-      contents: write
     env:
-      TARGET_DEVICE: ${{ matrix.target }}
+      matrixtarget: ${{ matrix.target }}
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +51,6 @@ jobs:
 
     - name: 读取脚本设置
       run: |
-        export matrixtarget="${{ matrix.target }}"
         git clone --depth 1 -b main https://github.com/281677160/common ${GITHUB_WORKSPACE}/build/common
         mv -f ${GITHUB_WORKSPACE}/build/common/*.sh ${GITHUB_WORKSPACE}/build/${{matrix.target}}/
         chmod -R +x ${GITHUB_WORKSPACE}/build
@@ -90,7 +87,7 @@ jobs:
         
     - name: Generate cache mixkey
       id: gen_cache_mixkey
-      working-directory: ${GITHUB_WORKSPACE}/openwrt
+      working-directory: /${{matrix.target}}
       run: |
         target_device_arch="${TARGET_BOARD}"
         gcc_hash=$(gcc --version | sha256sum | awk '{print substr($1,1,8)}')
@@ -103,7 +100,7 @@ jobs:
       with:
         ccache: 'true'
         mixkey: ${{ steps.gen_cache_mixkey.outputs.mixkey }}
-        prefix: ${GITHUB_WORKSPACE}/openwrt
+        prefix: /${{matrix.target}}
         
     - name: 启用在线更新
       continue-on-error: true
