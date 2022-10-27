@@ -80,12 +80,27 @@ jobs:
         cd openwrt
         source ${BUILD_PATH}/common.sh && Diy_menu
     
-    - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
+    - name: 混合缓存密钥
+      id: gen_cache_mixkey
+      working-directory: /${{matrix.target}}
+      run: |
+        target_device_arch_1="${{matrix.target}}"
+        gcc_hash=$(gcc --version | sha256sum | awk '{print substr($1,1,8)}')
+        ldd_hash=$(ldd --version | sha256sum | awk '{print substr($1,1,8)}')
+        mixkey1="${target_device_arch_1}-${gcc_hash}-${ldd_hash}"
+        mixkey2="${target_device_arch_2}-${gcc_hash}-${ldd_hash}"
+       
+        echo "mixkey1=$mixkey1" >> $GITHUB_OUTPUT
+        echo "mixkey2=$mixkey2" >> $GITHUB_OUTPUT
+        
+    - name: 超级加速1
       if: env.USE_CACHEWRTBUILD == 'true'
-      uses: klever1988/cachewrtbuild@main
+      uses: HiGarfield/cachewrtbuild@main
       with:
-        ccache: 'true'
-        prefix: ${{ github.workspace }}/openwrt
+          ccache: 'true'
+          mixkey: ${{matrix.target}}
+          prefix: /${{matrix.target}}
+          skip_saving: 'true'
 
     - name: 生成配置文件
       run: |
