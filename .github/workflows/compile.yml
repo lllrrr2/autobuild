@@ -87,7 +87,6 @@ jobs:
         
     - name: Generate cache mixkey
       id: gen_cache_mixkey
-      working-directory: /${{matrix.target}}
       run: |
         target_device_arch="${TARGET_BOARD}"
         gcc_hash=$(gcc --version | sha256sum | awk '{print substr($1,1,8)}')
@@ -100,7 +99,7 @@ jobs:
       with:
         ccache: 'true'
         mixkey: ${{ steps.gen_cache_mixkey.outputs.mixkey }}
-        prefix: ${GITHUB_WORKSPACE}/openwrt
+        prefix: $GITHUB_WORKSPACE/openwrt
         
     - name: 启用在线更新
       continue-on-error: true
