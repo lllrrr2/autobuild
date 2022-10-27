@@ -33,10 +33,13 @@ env:
 
 jobs:
   build:
+    name: 编译 "${{matrix.target}}"
     runs-on: ubuntu-22.04
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
-
-    name: 编译 "${{matrix.target}}"
+    permissions:
+      contents: write
+    env:
+      TARGET_DEVICE: ${{ matrix.target }}
     strategy:
       fail-fast: false
       matrix:
@@ -79,33 +82,28 @@ jobs:
       run: |
         cd openwrt
         source ${BUILD_PATH}/common.sh && Diy_menu
-    
-    - name: 混合缓存密钥
-      id: gen_cache_mixkey
-      working-directory: /${{matrix.target}}
-      run: |
-        target_device_arch_1="${{matrix.target}}"
-        gcc_hash=$(gcc --version | sha256sum | awk '{print substr($1,1,8)}')
-        ldd_hash=$(ldd --version | sha256sum | awk '{print substr($1,1,8)}')
-        mixkey1="${target_device_arch_1}-${gcc_hash}-${ldd_hash}"
-        mixkey2="${target_device_arch_2}-${gcc_hash}-${ldd_hash}"
-       
-        echo "mixkey1=$mixkey1" >> $GITHUB_OUTPUT
-        echo "mixkey2=$mixkey2" >> $GITHUB_OUTPUT
-        
-    - name: 超级加速1
-      if: env.USE_CACHEWRTBUILD == 'true'
-      uses: HiGarfield/cachewrtbuild@main
-      with:
-          ccache: 'true'
-          mixkey: ${{ steps.gen_cache_mixkey.outputs.mixkey1 }}
-          prefix: ${{ github.workspace }}/openwrt
-          skip_saving: 'true'
 
     - name: 生成配置文件
       run: |
         cd openwrt
         source ${BUILD_PATH}/common.sh && Diy_menu2
+        
+    - name: Generate cache mixkey
+      id: gen_cache_mixkey
+      working-directory: ${GITHUB_WORKSPACE}/openwrt
+      run: |
+        target_device_arch="${TARGET_BOARD}"
+        gcc_hash=$(gcc --version | sha256sum | awk '{print substr($1,1,8)}')
+        ldd_hash=$(ldd --version | sha256sum | awk '{print substr($1,1,8)}')
+        mixkey="${target_device_arch}-${gcc_hash}-${ldd_hash}"
+        echo "mixkey=$mixkey" >> $GITHUB_OUTPUT
+    
+    - name: Cache
+      uses: HiGarfield/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        mixkey: ${{ steps.gen_cache_mixkey.outputs.mixkey }}
+        prefix: ${GITHUB_WORKSPACE}/openwrt
         
     - name: 启用在线更新
       continue-on-error: true
